@@ -13,14 +13,14 @@
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="ASP.NET Core MiddlewareMiddleware is software that’s assembled into an app pipeline to handle requests and responses , as below   ref : ASP.NET Core Middleware it’s ok to setup middleware with single">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://tom00qq.github.io/blog.github.io/request-delegate-pipeline.png">
-<meta property="og:image" content="https://tom00qq.github.io/blog.github.io/middleware-pipeline.svg">
-<meta property="og:image" content="https://tom00qq.github.io/blog.github.io/MVCEndpoint.png">
+<meta property="og:image" content="https://tom00qq.github.io/blog.github.io/2024/10/22/netCore-middleware/request-delegate-pipeline.png">
+<meta property="og:image" content="https://tom00qq.github.io/blog.github.io/2024/10/22/netCore-middleware/middleware-pipeline.svg">
+<meta property="og:image" content="https://tom00qq.github.io/blog.github.io/2024/10/22/netCore-middleware/MVCEndpoint.png">
 <meta property="article:published_time" content="2024-10-22T00:22:15.000Z">
-<meta property="article:modified_time" content="2024-10-23T10:09:01.728Z">
+<meta property="article:modified_time" content="2024-10-23T10:12:21.378Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://tom00qq.github.io/blog.github.io/request-delegate-pipeline.png">
+<meta name="twitter:image" content="https://tom00qq.github.io/blog.github.io/2024/10/22/netCore-middleware/request-delegate-pipeline.png">
   
     <link rel="alternate" href="/blog.github.io/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -98,7 +98,7 @@
     <div class="e-content article-entry" itemprop="articleBody">
       
         <h2 id="ASP-NET-Core-Middleware"><a href="#ASP-NET-Core-Middleware" class="headerlink" title="ASP.NET Core Middleware"></a>ASP.NET Core Middleware</h2><p>Middleware is software that’s assembled into an app pipeline to handle requests and responses , as below </p>
-<p><img src="/blog.github.io/request-delegate-pipeline.png" alt="request-delegate-pipeline"></p>
+<p><img src="/blog.github.io/2024/10/22/netCore-middleware/request-delegate-pipeline.png" alt="request-delegate-pipeline"></p>
 <p><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/aspnet/core/fundamentals/middleware/?view=aspnetcore-8.0">ref : ASP.NET Core Middleware</a></p>
 <p>it’s ok to setup middleware with single or chained multiples, example :</p>
 <p>ASP.NET Core Program.cs file with</p>
@@ -109,7 +109,7 @@
 
 <h2 id="Short-circuiting-the-request-pipeline"><a href="#Short-circuiting-the-request-pipeline" class="headerlink" title="Short-circuiting the request pipeline"></a>Short-circuiting the request pipeline</h2><p>the request could Short-circuiting to avoid unnecessary work, ex : add an static file middleware to hanldle static file request when the middleware been triggered it would response and ignore the middleware after.</p>
 <h2 id="Run-delegates"><a href="#Run-delegates" class="headerlink" title="Run delegates"></a>Run delegates</h2><p>is the end of middleware , Run or Use keywords after the first Run keyword would not be called.</p>
-<h2 id="Middleware-order"><a href="#Middleware-order" class="headerlink" title="Middleware order"></a>Middleware order</h2><p><img src="/blog.github.io/middleware-pipeline.svg" alt="middleware-pipeline"></p>
+<h2 id="Middleware-order"><a href="#Middleware-order" class="headerlink" title="Middleware order"></a>Middleware order</h2><p><img src="/blog.github.io/2024/10/22/netCore-middleware/middleware-pipeline.svg" alt="middleware-pipeline"></p>
 <p>official provided recommonded order for the middleware , but the user can control over order by own. ( the order is determine by the code order )</p>
 <p>Why is there official pre-ordered order recommonded ?</p>
 <ul>
@@ -142,12 +142,12 @@ When to use app.Run() ?
 <figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">request: &quot;/&quot;</span><br><span class="line">1. 中間件 1 - 進入 [/]</span><br><span class="line">2. 中間件 2 - 進入 [/]</span><br><span class="line">3. 處理首頁請求 [/]</span><br><span class="line">4. 中間件 2 - 即將拋出異常</span><br><span class="line">5. 觸發 app.UseExceptionHandler(&quot;/error&quot;);</span><br><span class="line"></span><br><span class="line">request: &quot;/error&quot;</span><br><span class="line">1. 中間件 1 - 進入 [/error]</span><br><span class="line">2. 中間件 2 - 進入 [/error]</span><br><span class="line">3. 進入錯誤處理頁面 [/error]</span><br><span class="line">   原始請求路徑: /</span><br><span class="line">   捕捉到的錯誤 中間件 2 - 即將拋出異常</span><br><span class="line">4. 中間件 2 - 返回 [/error]</span><br><span class="line">5. 中間件 1 - 返回 [/error]</span><br></pre></td></tr></table></figure>
 
 <p>Don’t call next.Invoke during or after the response has been sent to the client.</p>
-<h2 id="MVC-Endpoint"><a href="#MVC-Endpoint" class="headerlink" title="MVC Endpoint"></a>MVC Endpoint</h2><p><img src="/blog.github.io/MVCEndpoint.png" alt="MVCEndpoint"></p>
+<h2 id="MVC-Endpoint"><a href="#MVC-Endpoint" class="headerlink" title="MVC Endpoint"></a>MVC Endpoint</h2><p><img src="/blog.github.io/2024/10/22/netCore-middleware/MVCEndpoint.png" alt="MVCEndpoint"></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://tom00qq.github.io/blog.github.io/2024/10/22/netCore-middleware/" data-id="cm2lpplkp0000xke721e0fz60" data-title="netCore-middleware" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://tom00qq.github.io/blog.github.io/2024/10/22/netCore-middleware/" data-id="cm2lptunx00017ge700r662x9" data-title="netCore-middleware" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
