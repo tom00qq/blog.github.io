@@ -42,7 +42,7 @@
 </ol>
 <br/>
 
-<p><strong>參考</strong><br><br/><br><a class="link"   href="https://www.youtube.com/watch?v=8aGhZQkoFbQ" >所以說 event loop 到底是什麼玩意兒？| Philip Roberts | JSConf EU<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a><br><br/><br><a class="link"   href="http://latentflip.com/loupe/?code=JC5vbignYnV0dG9uJywgJ2NsaWNrJywgZnVuY3Rpb24gb25DbGljaygpIHsKICAgIHNldFRpbWVvdXQoZnVuY3Rpb24gdGltZXIoKSB7CiAgICAgICAgY29uc29sZS5sb2coJ1lvdSBjbGlja2VkIHRoZSBidXR0b24hJyk7ICAgIAogICAgfSwgMjAwMCk7Cn0pOwoKY29uc29sZS5sb2coIkhpISIpOwoKc2V0VGltZW91dChmdW5jdGlvbiB0aW1lb3V0KCkgewogICAgY29uc29sZS5sb2coIkNsaWNrIHRoZSBidXR0b24hIik7Cn0sIDUwMDApOwoKY29uc29sZS5sb2coIldlbGNvbWUgdG8gbG91cGUuIik7!!!PGJ1dHRvbj5DbGljayBtZSE8L2J1dHRvbj4=" >Loupe - event loop 視覺模擬工具<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></p>
+<p><strong>參考</strong><br><a class="link"   href="https://www.youtube.com/watch?v=8aGhZQkoFbQ" >所以說 event loop 到底是什麼玩意兒？| Philip Roberts | JSConf EU<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a><br><a class="link"   href="http://latentflip.com/loupe/?code=JC5vbignYnV0dG9uJywgJ2NsaWNrJywgZnVuY3Rpb24gb25DbGljaygpIHsKICAgIHNldFRpbWVvdXQoZnVuY3Rpb24gdGltZXIoKSB7CiAgICAgICAgY29uc29sZS5sb2coJ1lvdSBjbGlja2VkIHRoZSBidXR0b24hJyk7ICAgIAogICAgfSwgMjAwMCk7Cn0pOwoKY29uc29sZS5sb2coIkhpISIpOwoKc2V0VGltZW91dChmdW5jdGlvbiB0aW1lb3V0KCkgewogICAgY29uc29sZS5sb2coIkNsaWNrIHRoZSBidXR0b24hIik7Cn0sIDUwMDApOwoKY29uc29sZS5sb2coIldlbGNvbWUgdG8gbG91cGUuIik7!!!PGJ1dHRvbj5DbGljayBtZSE8L2J1dHRvbj4=" >Loupe - event loop 視覺模擬工具<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></p>
 <br/>
 
 <p><strong>補充 Micro task Queue</strong></p>
@@ -61,72 +61,11 @@
                 ></p>
 <p>(1) 每一幀的時間 (2) call stack 為空 ，Event Lop 就會排 Render Queue 工作。</p>
 ]]></content>
-      <tags>
-        <tag>JavaScript</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>這樣寫 Code 好不好 ?</title>
-    <url>/blog.github.io/2024/11/18/Is-it-OK-to-code-like-this/</url>
-    <content><![CDATA[<h3 id="單元總覽"><a href="#單元總覽" class="headerlink" title="單元總覽"></a>單元總覽</h3><ul>
-<li>類別設計 &#x2F; 不可變性質<ul>
-<li><a href="#%E7%A9%A9%E5%9B%BA%E7%9A%84%E9%A1%9E%E5%88%A5%E8%A8%AD%E8%A8%88">穩固的類別設計</a></li>
-<li><a href="#%E5%80%BC%E7%89%A9%E4%BB%B6">值物件</a></li>
-</ul>
-</li>
-<li>低內聚<ul>
-<li><a href="#%E6%9C%80%E5%B0%91%E7%9F%A5%E8%AD%98%E5%8E%9F%E5%89%87">最少知識原則</a></li>
-<li><a href="#%E8%AA%A4%E7%94%A8%E7%9A%84%E5%85%B1%E7%94%A8%E9%A1%9E%E5%88%A5">誤用的 Utility &#x2F;Common 類別</a></li>
-<li>[分散的初始化函式]（）</li>
-</ul>
-</li>
-</ul>
-<h3 id="穩固的類別設計"><a href="#穩固的類別設計" class="headerlink" title="穩固的類別設計"></a>穩固的類別設計</h3><p>過度彈性的類別在簡易的系統中不是問題，在經年累月的系統中卻是造成不穩定的隱形殺手，案例如下：</p>
-<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Money</span> &#123;</span><br><span class="line">    <span class="comment">// 金額</span></span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> amount &#123;<span class="keyword">get</span>;<span class="keyword">set</span>;&#125;</span><br><span class="line">    <span class="comment">// 幣值</span></span><br><span class="line">    <span class="keyword">public</span> Currency currency &#123;<span class="keyword">get</span>;<span class="keyword">set</span>;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// other place in applications...</span></span><br><span class="line"><span class="keyword">var</span> money = <span class="keyword">new</span> Money();</span><br><span class="line"></span><br><span class="line">money.amount = <span class="number">100</span>;</span><br><span class="line">money.currency = <span class="keyword">new</span> Currency.getinstance(locale.JP);</span><br><span class="line"></span><br><span class="line"><span class="comment">// ignore hundred lines of codes...</span></span><br><span class="line"></span><br><span class="line">money.amount = <span class="number">-100</span>; <span class="comment">// 無效值被傳入</span></span><br><span class="line">money.currency = <span class="keyword">new</span> Currency.getinstance(locale.US); <span class="comment">// 內容被隨處任意覆蓋</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// calculate</span></span><br><span class="line"><span class="keyword">var</span> moneyB = <span class="keyword">new</span> Money();</span><br><span class="line">moneyB.amount = <span class="number">1000</span>;</span><br><span class="line">moneyB.currency = <span class="keyword">new</span> Currency.getinstance(locale.US);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> total = money.amount + moneyB.amount; <span class="comment">// 幣值不同卻可以計算，且計算邏輯暴露在 Monrey 外</span></span><br></pre></td></tr></table></figure></div>
-
-<p>建立穩固的類別可以遵照：</p>
-<ul>
-<li>建構式初始化值</li>
-<li>初始化時檢查有效性</li>
-<li>類別成員預設為不可修正</li>
-<li>修正時回傳傳入與回傳物件</li>
-</ul>
-<p>例如</p>
-<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Money</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Money</span>(<span class="params"><span class="built_in">int</span> amount , Currency currency</span>)</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(amount &lt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">&quot;金額需大於 0&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(currency == <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">&quot;幣值不得為空&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">this</span>._amount = amount;</span><br><span class="line">        <span class="keyword">this</span>._currency = currency;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 金額</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> <span class="built_in">int</span> _amount;</span><br><span class="line">    <span class="comment">// 幣值</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> Currency _currency;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> Amount</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">get</span> &#123; <span class="keyword">return</span> _amount; &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> Currency Currency</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">get</span> &#123; <span class="keyword">return</span> _currency; &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Money <span class="title">Add</span>(<span class="params">Money other</span>)</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 檢驗幣值</span></span><br><span class="line">        <span class="keyword">if</span>(!<span class="keyword">this</span>._currency.Equals(other.Currency)) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">&quot;幣值不同&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">var</span> added = <span class="keyword">this</span>._amount + other.Amount;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 透過初始化再次確保值通過檢驗</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Money(added,<span class="keyword">this</span>._currency);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
-
-<h3 id="值物件"><a href="#值物件" class="headerlink" title="值物件"></a>值物件</h3><p>把程式碼中的值已物件表示，來提高程式碼的嚴謹與內聚程度。</p>
-<p>比如</p>
-<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Money</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> Amount;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 幣值成員，可以成立比如： &quot;JP&quot; &quot;US&quot; ...，</span></span><br><span class="line">    <span class="comment">// 但彈性太大了帶 &quot;Apple&quot; 對系統說也不會有錯</span></span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">string</span> Currency;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 同理 otherAmount 可以帶入 count,page ... 等數字型別的參數，</span></span><br><span class="line">    <span class="comment">// 程式並不會報錯</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Money <span class="title">Add</span>(<span class="params"><span class="built_in">int</span> otherAmount</span>)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.Amount + otherAmount;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
-
-<p>改用物件來取代原始型別的值，雖然較冗長，但能確保接受與輸出的值都是正確且相關的。</p>
-<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Money</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 省略 ...</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> Currency Currency</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">get</span> &#123; <span class="keyword">return</span> _currency; &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Money <span class="title">Add</span>(<span class="params">Money other</span>)</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(!<span class="keyword">this</span>._currency.Equals(other.Currency)) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">&quot;幣值不同&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">var</span> added = <span class="keyword">this</span>._amount + other.Amount;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Money(added,<span class="keyword">this</span>._currency);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
-
-<br/>
-
-<h3 id="誤用的共用類別"><a href="#誤用的共用類別" class="headerlink" title="誤用的共用類別"></a>誤用的共用類別</h3><p>在系統開發中，若同一段程式碼經常需要重複使用，通常會寫成靜態函式並放置於某個共用類別中，取名為：Utilty 或 Common …。</p>
-<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Common</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 計算含稅金額</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="built_in">int</span> <span class="title">calcAmmonutIcludingTax</span>(<span class="params"><span class="built_in">int</span> ammount,<span class="built_in">int</span> taxRate</span>)</span> &#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 轉換數字成中文數字</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="built_in">string</span> <span class="title">convertNumberToChinese</span>(<span class="params"><span class="built_in">string</span> text</span>)</span> &#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
-
-<p>不自覺 Common 將越多越雜，造成“低內聚”的情況。低內聚，比如有需求要修改稅務相關邏輯時，如果系統稅務的邏輯同時散落於各處，置於 Common 中的相關函式，因為難以一時聯想到要進來確認則可能導致修改時遺漏而出錯。</p>
-<p>會造成上述原因使因為誤會了 “常用” 與 ”通用“，通用不涉及特定商業邏輯，比如：例外處理、錯誤檢測、大小寫轉換，而常用則相反，以上述案例來說，系統中可能很多地方需要計算含稅金額，這時更好的處理方式為，新增一個類比如：</p>
-<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AmmonutIcludingTax</span> &#123;</span><br><span class="line">    <span class="comment">// calcAmmonutIcludingTax ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
-
-<br/>
-
-<h3 id="最少知識原則"><a href="#最少知識原則" class="headerlink" title="最少知識原則"></a>最少知識原則</h3><p>又可理解為，對物件“只下令，不詢問”，反例比如：</p>
-<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Address</span> &#123;</span><br><span class="line">   <span class="built_in">string</span> City</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Customer</span> &#123;</span><br><span class="line">    Address Address</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">OrderHandler</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">HandleOrder</span>(<span class="params">Customer customer</span>)</span> &#123;</span><br><span class="line">        <span class="built_in">string</span> city = customer.Address.City; <span class="comment">// 違反原則</span></span><br><span class="line">        Console.WriteLine(<span class="string">$&quot;<span class="subst">&#123;city&#125;</span> order has been handled.&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
-
-<p>此處，要得知 City 得知道 Customer &gt; Address &gt; City 層層關係，不但有過多資訊，且若是 Customer 的 Address 被移除或改變實作方式這邊就必須跟著修改。</p>
-<p>針對 City “只下令，不詢問”:</p>
-<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Address</span> &#123;</span><br><span class="line">   <span class="built_in">string</span> City</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Customer</span> &#123;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> Address Address</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">    <span class="keyword">public</span> <span class="built_in">string</span> <span class="title">GetCity</span>()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> Address.City;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">OrderHandler</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">HandleOrder</span>(<span class="params">Customer customer</span>)</span> &#123;</span><br><span class="line">        <span class="built_in">string</span> city = customer.GetCity(); <span class="comment">// 修正</span></span><br><span class="line">        Console.WriteLine(<span class="string">$&quot;<span class="subst">&#123;city&#125;</span> order has been handled.&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
-
-<p>如此，OrderHandler 完全不需要知道 Customer 內部其實是透過 Address 取得 City 的，且當 Address 與 City 的關係有改變時，也完全不關 如此，OrderHandler 的事，只要調整 Customer 物件即可。</p>
-<p>2024&#x2F;11&#x2F;19 持續更新中 …</p>
-]]></content>
       <categories>
-        <category>Backend</category>
+        <category>Frontend</category>
       </categories>
       <tags>
-        <tag>C#</tag>
+        <tag>JavaScript</tag>
       </tags>
   </entry>
   <entry>
@@ -199,6 +138,142 @@
       </categories>
       <tags>
         <tag>Ｇoogle APIs</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>這樣寫 Code 好不好 ?</title>
+    <url>/blog.github.io/2024/11/18/Is-it-OK-to-code-like-this/</url>
+    <content><![CDATA[<h3 id="單元總覽"><a href="#單元總覽" class="headerlink" title="單元總覽"></a>單元總覽</h3><ul>
+<li>類別設計 &#x2F; 不可變性質<ul>
+<li><a href="#%E7%A9%A9%E5%9B%BA%E7%9A%84%E9%A1%9E%E5%88%A5%E8%A8%AD%E8%A8%88">穩固的類別設計</a></li>
+<li><a href="#%E5%80%BC%E7%89%A9%E4%BB%B6">值物件</a></li>
+</ul>
+</li>
+<li>低內聚<ul>
+<li><a href="#%E6%9C%80%E5%B0%91%E7%9F%A5%E8%AD%98%E5%8E%9F%E5%89%87">最少知識原則</a></li>
+<li><a href="#%E8%AA%A4%E7%94%A8%E7%9A%84%E5%85%B1%E7%94%A8%E9%A1%9E%E5%88%A5">誤用的 Utility &#x2F;Common 類別</a></li>
+<li>[分散的初始化函式]（）</li>
+</ul>
+</li>
+</ul>
+<h3 id="穩固的類別設計"><a href="#穩固的類別設計" class="headerlink" title="穩固的類別設計"></a>穩固的類別設計</h3><p>過度彈性的類別在簡易的系統中不是問題，在經年累月的系統中卻是造成不穩定的隱形殺手，案例如下：</p>
+<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Money</span> &#123;</span><br><span class="line">    <span class="comment">// 金額</span></span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> amount &#123;<span class="keyword">get</span>;<span class="keyword">set</span>;&#125;</span><br><span class="line">    <span class="comment">// 幣值</span></span><br><span class="line">    <span class="keyword">public</span> Currency currency &#123;<span class="keyword">get</span>;<span class="keyword">set</span>;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// other place in applications...</span></span><br><span class="line"><span class="keyword">var</span> money = <span class="keyword">new</span> Money();</span><br><span class="line"></span><br><span class="line">money.amount = <span class="number">100</span>;</span><br><span class="line">money.currency = <span class="keyword">new</span> Currency.getinstance(locale.JP);</span><br><span class="line"></span><br><span class="line"><span class="comment">// ignore hundred lines of codes...</span></span><br><span class="line"></span><br><span class="line">money.amount = <span class="number">-100</span>; <span class="comment">// 無效值被傳入</span></span><br><span class="line">money.currency = <span class="keyword">new</span> Currency.getinstance(locale.US); <span class="comment">// 內容被隨處任意覆蓋</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// calculate</span></span><br><span class="line"><span class="keyword">var</span> moneyB = <span class="keyword">new</span> Money();</span><br><span class="line">moneyB.amount = <span class="number">1000</span>;</span><br><span class="line">moneyB.currency = <span class="keyword">new</span> Currency.getinstance(locale.US);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> total = money.amount + moneyB.amount; <span class="comment">// 幣值不同卻可以計算，且計算邏輯暴露在 Monrey 外</span></span><br></pre></td></tr></table></figure></div>
+
+<p>建立穩固的類別可以遵照：</p>
+<ul>
+<li>建構式初始化值</li>
+<li>初始化時檢查有效性</li>
+<li>類別成員預設為不可修正</li>
+<li>修正時回傳傳入與回傳物件</li>
+</ul>
+<p>例如</p>
+<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Money</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Money</span>(<span class="params"><span class="built_in">int</span> amount , Currency currency</span>)</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(amount &lt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">&quot;金額需大於 0&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(currency == <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">&quot;幣值不得為空&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">this</span>._amount = amount;</span><br><span class="line">        <span class="keyword">this</span>._currency = currency;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 金額</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> <span class="built_in">int</span> _amount;</span><br><span class="line">    <span class="comment">// 幣值</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> Currency _currency;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> Amount</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">get</span> &#123; <span class="keyword">return</span> _amount; &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> Currency Currency</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">get</span> &#123; <span class="keyword">return</span> _currency; &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Money <span class="title">Add</span>(<span class="params">Money other</span>)</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 檢驗幣值</span></span><br><span class="line">        <span class="keyword">if</span>(!<span class="keyword">this</span>._currency.Equals(other.Currency)) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">&quot;幣值不同&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">var</span> added = <span class="keyword">this</span>._amount + other.Amount;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 透過初始化再次確保值通過檢驗</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Money(added,<span class="keyword">this</span>._currency);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<h3 id="值物件"><a href="#值物件" class="headerlink" title="值物件"></a>值物件</h3><p>把程式碼中的值已物件表示，來提高程式碼的嚴謹與內聚程度。</p>
+<p>比如</p>
+<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Money</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> Amount;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 幣值成員，可以成立比如： &quot;JP&quot; &quot;US&quot; ...，</span></span><br><span class="line">    <span class="comment">// 但彈性太大了帶 &quot;Apple&quot; 對系統說也不會有錯</span></span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">string</span> Currency;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 同理 otherAmount 可以帶入 count,page ... 等數字型別的參數，</span></span><br><span class="line">    <span class="comment">// 程式並不會報錯</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Money <span class="title">Add</span>(<span class="params"><span class="built_in">int</span> otherAmount</span>)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.Amount + otherAmount;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>改用物件來取代原始型別的值，雖然較冗長，但能確保接受與輸出的值都是正確且相關的。</p>
+<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Money</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 省略 ...</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> Currency Currency</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">get</span> &#123; <span class="keyword">return</span> _currency; &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Money <span class="title">Add</span>(<span class="params">Money other</span>)</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(!<span class="keyword">this</span>._currency.Equals(other.Currency)) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">&quot;幣值不同&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">var</span> added = <span class="keyword">this</span>._amount + other.Amount;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Money(added,<span class="keyword">this</span>._currency);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<br/>
+
+<h3 id="誤用的共用類別"><a href="#誤用的共用類別" class="headerlink" title="誤用的共用類別"></a>誤用的共用類別</h3><p>在系統開發中，若同一段程式碼經常需要重複使用，通常會寫成靜態函式並放置於某個共用類別中，取名為：Utilty 或 Common …。</p>
+<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Common</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 計算含稅金額</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="built_in">int</span> <span class="title">calcAmmonutIcludingTax</span>(<span class="params"><span class="built_in">int</span> ammount,<span class="built_in">int</span> taxRate</span>)</span> &#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 轉換數字成中文數字</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="built_in">string</span> <span class="title">convertNumberToChinese</span>(<span class="params"><span class="built_in">string</span> text</span>)</span> &#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>不自覺 Common 將越多越雜，造成“低內聚”的情況。低內聚，比如有需求要修改稅務相關邏輯時，如果系統稅務的邏輯同時散落於各處，置於 Common 中的相關函式，因為難以一時聯想到要進來確認則可能導致修改時遺漏而出錯。</p>
+<p>會造成上述原因使因為誤會了 “常用” 與 ”通用“，通用不涉及特定商業邏輯，比如：例外處理、錯誤檢測、大小寫轉換，而常用則相反，以上述案例來說，系統中可能很多地方需要計算含稅金額，這時更好的處理方式為，新增一個類比如：</p>
+<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AmmonutIcludingTax</span> &#123;</span><br><span class="line">    <span class="comment">// calcAmmonutIcludingTax ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<br/>
+
+<h3 id="最少知識原則"><a href="#最少知識原則" class="headerlink" title="最少知識原則"></a>最少知識原則</h3><p>又可理解為，對物件“只下令，不詢問”，反例比如：</p>
+<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Address</span> &#123;</span><br><span class="line">   <span class="built_in">string</span> City</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Customer</span> &#123;</span><br><span class="line">    Address Address</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">OrderHandler</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">HandleOrder</span>(<span class="params">Customer customer</span>)</span> &#123;</span><br><span class="line">        <span class="built_in">string</span> city = customer.Address.City; <span class="comment">// 違反原則</span></span><br><span class="line">        Console.WriteLine(<span class="string">$&quot;<span class="subst">&#123;city&#125;</span> order has been handled.&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>此處，要得知 City 得知道 Customer &gt; Address &gt; City 層層關係，不但有過多資訊，且若是 Customer 的 Address 被移除或改變實作方式這邊就必須跟著修改。</p>
+<p>針對 City “只下令，不詢問”:</p>
+<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Address</span> &#123;</span><br><span class="line">   <span class="built_in">string</span> City</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Customer</span> &#123;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> Address Address</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">    <span class="keyword">public</span> <span class="built_in">string</span> <span class="title">GetCity</span>()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> Address.City;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">OrderHandler</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">HandleOrder</span>(<span class="params">Customer customer</span>)</span> &#123;</span><br><span class="line">        <span class="built_in">string</span> city = customer.GetCity(); <span class="comment">// 修正</span></span><br><span class="line">        Console.WriteLine(<span class="string">$&quot;<span class="subst">&#123;city&#125;</span> order has been handled.&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>如此，OrderHandler 完全不需要知道 Customer 內部其實是透過 Address 取得 City 的，且當 Address 與 City 的關係有改變時，也完全不關 如此，OrderHandler 的事，只要調整 Customer 物件即可。</p>
+<p>2024&#x2F;11&#x2F;19 持續更新中 …</p>
+]]></content>
+      <categories>
+        <category>Backend</category>
+      </categories>
+      <tags>
+        <tag>C#</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>netCore-middleware</title>
+    <url>/blog.github.io/2024/10/22/netCore-middleware/</url>
+    <content><![CDATA[<h2 id="ASP-NET-Core-Middleware"><a href="#ASP-NET-Core-Middleware" class="headerlink" title="ASP.NET Core Middleware"></a>ASP.NET Core Middleware</h2><p>Middleware is software that’s assembled into an app pipeline to handle requests and responses , as below</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/blog.github.io/2024/10/22/netCore-middleware/request-delegate-pipeline.png"
+                      alt="request-delegate-pipeline"
+                ></p>
+<p><a class="link"   href="https://learn.microsoft.com/en-us/aspnet/core/fundamentals/middleware/?view=aspnetcore-8.0" >ref : ASP.NET Core Middleware<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></p>
+<p>it’s ok to setup middleware with single or chained multiples, example :</p>
+<p>ASP.NET Core Program.cs file with</p>
+<p>( single middleware return result directly )</p>
+<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> builder = WebApplication.CreateBuilder(args);</span><br><span class="line"><span class="keyword">var</span> app = builder.Build();</span><br><span class="line"></span><br><span class="line">app.Run(<span class="keyword">async</span> context =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">await</span> context.Response.WriteAsync(<span class="string">&quot;Hello world!&quot;</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">app.Run();</span><br></pre></td></tr></table></figure></div>
+
+<p>( chained middlewares by app.Use(…) )</p>
+<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> builder = WebApplication.CreateBuilder(args);</span><br><span class="line"><span class="keyword">var</span> app = builder.Build();</span><br><span class="line"></span><br><span class="line">app.Use(<span class="keyword">async</span> (context, next) =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Do work that can write to the Response.</span></span><br><span class="line">    <span class="keyword">await</span> next.Invoke();</span><br><span class="line">    <span class="comment">// Do logging or other work that doesn&#x27;t write to the Response.</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">app.Run(<span class="keyword">async</span> context =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">await</span> context.Response.WriteAsync(<span class="string">&quot;Hello from 2nd delegate.&quot;</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">app.Run();</span><br></pre></td></tr></table></figure></div>
+
+<h2 id="Short-circuiting-the-request-pipeline"><a href="#Short-circuiting-the-request-pipeline" class="headerlink" title="Short-circuiting the request pipeline"></a>Short-circuiting the request pipeline</h2><p>the request could Short-circuiting to avoid unnecessary work, ex : add an static file middleware to hanldle static file request when the middleware been triggered it would response and ignore the middleware after.</p>
+<h2 id="Run-delegates"><a href="#Run-delegates" class="headerlink" title="Run delegates"></a>Run delegates</h2><p>is the end of middleware , Run or Use keywords after the first Run keyword would not be called.</p>
+<h2 id="Middleware-order"><a href="#Middleware-order" class="headerlink" title="Middleware order"></a>Middleware order</h2><p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/blog.github.io/2024/10/22/netCore-middleware/middleware-pipeline.svg"
+                      alt="middleware-pipeline"
+                ></p>
+<p>official provided recommonded order for the middleware , but the user can control over order by own. ( the order is determine by the code order )</p>
+<p>Why is there official pre-ordered order recommonded ?</p>
+<ul>
+<li><strong>Ensure Correct Functionality</strong> : <code>UseAuthentication</code> must run before <code>UseAuthorization</code> because the user must be authenticated before checking their permissions</li>
+<li><strong>Optimize Performance</strong> : By processing certain tasks earlier, such as static file requests or health checks, you can bypass more complex operations like authentication when they aren’t needed<br>Why is the order important ?</li>
+</ul>
+<br/>
+<b>
+As mentioned above "app.Run()" is the termianal of middlewares and in the img here shown endpoint is the end of middleware. So what are there relationships?
+</b>
+<br/><br/>
+
+<p>If app.Run() is placed before app.UseEndpoints(), MVC or Razor Pages endpoints will not execute. If placed after, it will only be hit if no endpoint matches the route.</p>
+<p>Since app.UseEndpoints() is responsible for executing the endpoint of your application (the actual logic that serves the request), app.Run() typically does not need to be used for handling requests in most standard cases, because MVC and Razor Pages handle requests fully.</p>
+<b>
+When to use app.Run() ?
+</b>
+
+<ul>
+<li>short-circuits</li>
+<li>simple app that no need for full MVC framework endpoint</li>
+</ul>
+<br/>
+
+<p>example :</p>
+<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> builder = WebApplication.CreateBuilder(args);</span><br><span class="line"><span class="keyword">var</span> app = builder.Build();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 1. 首先配置異常處理中間件</span></span><br><span class="line"></span><br><span class="line">app.UseExceptionHandler(<span class="string">&quot;/error&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 3. 第一個中間件</span></span><br><span class="line">app.Use(<span class="keyword">async</span> (context, next) =&gt;</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> currentPath = context.Request.Path;</span><br><span class="line">    Console.WriteLine(<span class="string">$&quot;中間件 1 - 進入 [<span class="subst">&#123;currentPath&#125;</span>]&quot;</span>);</span><br><span class="line">    <span class="keyword">await</span> next();</span><br><span class="line">    Console.WriteLine(<span class="string">$&quot;中間件 1 - 返回 [<span class="subst">&#123;currentPath&#125;</span>]&quot;</span>);</span><br><span class="line"></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 4. 第二個中間件（拋出異常的中間件）</span></span><br><span class="line">app.Use(<span class="keyword">async</span> (context, next) =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">var</span> currentPath = context.Request.Path;</span><br><span class="line">    Console.WriteLine(<span class="string">$&quot;中間件 2 - 進入 [<span class="subst">&#123;currentPath&#125;</span>]&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 先調用 next()</span></span><br><span class="line">    <span class="keyword">await</span> next();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 確保在拋出異常之前沒有寫入響應</span></span><br><span class="line">    <span class="keyword">if</span> (currentPath == <span class="string">&quot;/&quot;</span> &amp;&amp; !context.Response.HasStarted)</span><br><span class="line">    &#123;</span><br><span class="line">        Console.WriteLine(<span class="string">&quot;中間件 2 - 即將拋出異常&quot;</span>);</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> Exception(<span class="string">&quot;中間件 2 返回時拋出異常&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Console.WriteLine(<span class="string">$&quot;中間件 2 - 返回 [<span class="subst">&#123;currentPath&#125;</span>]&quot;</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 5. 首頁路由</span></span><br><span class="line">app.MapGet(<span class="string">&quot;/&quot;</span>, () =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    Console.WriteLine(<span class="string">&quot;處理首頁請求 [/]&quot;</span>);</span><br><span class="line">    <span class="comment">//return Results.Text(&quot;Hello World!&quot;, &quot;text/plain&quot;);</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 6. 錯誤處理路由</span></span><br><span class="line">app.Map(<span class="string">&quot;/error&quot;</span>, <span class="keyword">async</span> context =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    Console.WriteLine(<span class="string">&quot;進入錯誤處理頁面 [/error]&quot;</span>);</span><br><span class="line">    <span class="keyword">var</span> exceptionFeature =</span><br><span class="line">        context.Features.Get&lt;Microsoft.AspNetCore.Diagnostics.IExceptionHandlerPathFeature&gt;();</span><br><span class="line">    <span class="keyword">var</span> error = exceptionFeature?.Error;</span><br><span class="line">    <span class="keyword">var</span> originalPath = exceptionFeature?.Path;</span><br><span class="line"></span><br><span class="line">    Console.WriteLine(<span class="string">$&quot;原始請求路徑: <span class="subst">&#123;originalPath&#125;</span>&quot;</span>);</span><br><span class="line">    Console.WriteLine(<span class="string">$&quot;捕捉到的錯誤: <span class="subst">&#123;error?.Message&#125;</span>&quot;</span>);</span><br><span class="line"></span><br><span class="line">    context.Response.ContentType = <span class="string">&quot;text/plain&quot;</span>;</span><br><span class="line">    <span class="keyword">await</span> context.Response.WriteAsync(</span><br><span class="line">        <span class="string">$&quot;錯誤已被處理！\n&quot;</span> +</span><br><span class="line">        <span class="string">$&quot;原始請求: <span class="subst">&#123;originalPath&#125;</span>\n&quot;</span> +</span><br><span class="line">        <span class="string">$&quot;錯誤信息: <span class="subst">&#123;error?.Message&#125;</span>&quot;</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">app.Run();</span><br></pre></td></tr></table></figure></div>
+
+<p>result :</p>
+<div class="code-container" data-rel="Txt"><figure class="iseeu highlight txt"><table><tr><td class="code"><pre><span class="line">request: &quot;/&quot;</span><br><span class="line">1. 中間件 1 - 進入 [/]</span><br><span class="line">2. 中間件 2 - 進入 [/]</span><br><span class="line">3. 處理首頁請求 [/]</span><br><span class="line">4. 中間件 2 - 即將拋出異常</span><br><span class="line">5. 觸發 app.UseExceptionHandler(&quot;/error&quot;);</span><br><span class="line"></span><br><span class="line">request: &quot;/error&quot;</span><br><span class="line">1. 中間件 1 - 進入 [/error]</span><br><span class="line">2. 中間件 2 - 進入 [/error]</span><br><span class="line">3. 進入錯誤處理頁面 [/error]</span><br><span class="line">   原始請求路徑: /</span><br><span class="line">   捕捉到的錯誤 中間件 2 - 即將拋出異常</span><br><span class="line">4. 中間件 2 - 返回 [/error]</span><br><span class="line">5. 中間件 1 - 返回 [/error]</span><br></pre></td></tr></table></figure></div>
+
+<p>Don’t call next.Invoke during or after the response has been sent to the client.</p>
+<h2 id="MVC-Endpoint"><a href="#MVC-Endpoint" class="headerlink" title="MVC Endpoint"></a>MVC Endpoint</h2><p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/blog.github.io/2024/10/22/netCore-middleware/MVCEndpoint.png"
+                      alt="MVCEndpoint"
+                ></p>
+]]></content>
+      <categories>
+        <category>Backend</category>
+      </categories>
+      <tags>
+        <tag>.NET</tag>
       </tags>
   </entry>
   <entry>
@@ -355,78 +430,6 @@
 </ul>
 </li>
 </ul>
-]]></content>
-      <categories>
-        <category>Backend</category>
-      </categories>
-      <tags>
-        <tag>.NET</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>netCore-middleware</title>
-    <url>/blog.github.io/2024/10/22/netCore-middleware/</url>
-    <content><![CDATA[<h2 id="ASP-NET-Core-Middleware"><a href="#ASP-NET-Core-Middleware" class="headerlink" title="ASP.NET Core Middleware"></a>ASP.NET Core Middleware</h2><p>Middleware is software that’s assembled into an app pipeline to handle requests and responses , as below</p>
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/blog.github.io/2024/10/22/netCore-middleware/request-delegate-pipeline.png"
-                      alt="request-delegate-pipeline"
-                ></p>
-<p><a class="link"   href="https://learn.microsoft.com/en-us/aspnet/core/fundamentals/middleware/?view=aspnetcore-8.0" >ref : ASP.NET Core Middleware<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></p>
-<p>it’s ok to setup middleware with single or chained multiples, example :</p>
-<p>ASP.NET Core Program.cs file with</p>
-<p>( single middleware return result directly )</p>
-<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> builder = WebApplication.CreateBuilder(args);</span><br><span class="line"><span class="keyword">var</span> app = builder.Build();</span><br><span class="line"></span><br><span class="line">app.Run(<span class="keyword">async</span> context =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">await</span> context.Response.WriteAsync(<span class="string">&quot;Hello world!&quot;</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">app.Run();</span><br></pre></td></tr></table></figure></div>
-
-<p>( chained middlewares by app.Use(…) )</p>
-<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> builder = WebApplication.CreateBuilder(args);</span><br><span class="line"><span class="keyword">var</span> app = builder.Build();</span><br><span class="line"></span><br><span class="line">app.Use(<span class="keyword">async</span> (context, next) =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Do work that can write to the Response.</span></span><br><span class="line">    <span class="keyword">await</span> next.Invoke();</span><br><span class="line">    <span class="comment">// Do logging or other work that doesn&#x27;t write to the Response.</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">app.Run(<span class="keyword">async</span> context =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">await</span> context.Response.WriteAsync(<span class="string">&quot;Hello from 2nd delegate.&quot;</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">app.Run();</span><br></pre></td></tr></table></figure></div>
-
-<h2 id="Short-circuiting-the-request-pipeline"><a href="#Short-circuiting-the-request-pipeline" class="headerlink" title="Short-circuiting the request pipeline"></a>Short-circuiting the request pipeline</h2><p>the request could Short-circuiting to avoid unnecessary work, ex : add an static file middleware to hanldle static file request when the middleware been triggered it would response and ignore the middleware after.</p>
-<h2 id="Run-delegates"><a href="#Run-delegates" class="headerlink" title="Run delegates"></a>Run delegates</h2><p>is the end of middleware , Run or Use keywords after the first Run keyword would not be called.</p>
-<h2 id="Middleware-order"><a href="#Middleware-order" class="headerlink" title="Middleware order"></a>Middleware order</h2><p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/blog.github.io/2024/10/22/netCore-middleware/middleware-pipeline.svg"
-                      alt="middleware-pipeline"
-                ></p>
-<p>official provided recommonded order for the middleware , but the user can control over order by own. ( the order is determine by the code order )</p>
-<p>Why is there official pre-ordered order recommonded ?</p>
-<ul>
-<li><strong>Ensure Correct Functionality</strong> : <code>UseAuthentication</code> must run before <code>UseAuthorization</code> because the user must be authenticated before checking their permissions</li>
-<li><strong>Optimize Performance</strong> : By processing certain tasks earlier, such as static file requests or health checks, you can bypass more complex operations like authentication when they aren’t needed<br>Why is the order important ?</li>
-</ul>
-<br/>
-<b>
-As mentioned above "app.Run()" is the termianal of middlewares and in the img here shown endpoint is the end of middleware. So what are there relationships?
-</b>
-<br/><br/>
-
-<p>If app.Run() is placed before app.UseEndpoints(), MVC or Razor Pages endpoints will not execute. If placed after, it will only be hit if no endpoint matches the route.</p>
-<p>Since app.UseEndpoints() is responsible for executing the endpoint of your application (the actual logic that serves the request), app.Run() typically does not need to be used for handling requests in most standard cases, because MVC and Razor Pages handle requests fully.</p>
-<b>
-When to use app.Run() ?
-</b>
-
-<ul>
-<li>short-circuits</li>
-<li>simple app that no need for full MVC framework endpoint</li>
-</ul>
-<br/>
-
-<p>example :</p>
-<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> builder = WebApplication.CreateBuilder(args);</span><br><span class="line"><span class="keyword">var</span> app = builder.Build();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 1. 首先配置異常處理中間件</span></span><br><span class="line"></span><br><span class="line">app.UseExceptionHandler(<span class="string">&quot;/error&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 3. 第一個中間件</span></span><br><span class="line">app.Use(<span class="keyword">async</span> (context, next) =&gt;</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> currentPath = context.Request.Path;</span><br><span class="line">    Console.WriteLine(<span class="string">$&quot;中間件 1 - 進入 [<span class="subst">&#123;currentPath&#125;</span>]&quot;</span>);</span><br><span class="line">    <span class="keyword">await</span> next();</span><br><span class="line">    Console.WriteLine(<span class="string">$&quot;中間件 1 - 返回 [<span class="subst">&#123;currentPath&#125;</span>]&quot;</span>);</span><br><span class="line"></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 4. 第二個中間件（拋出異常的中間件）</span></span><br><span class="line">app.Use(<span class="keyword">async</span> (context, next) =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">var</span> currentPath = context.Request.Path;</span><br><span class="line">    Console.WriteLine(<span class="string">$&quot;中間件 2 - 進入 [<span class="subst">&#123;currentPath&#125;</span>]&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 先調用 next()</span></span><br><span class="line">    <span class="keyword">await</span> next();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 確保在拋出異常之前沒有寫入響應</span></span><br><span class="line">    <span class="keyword">if</span> (currentPath == <span class="string">&quot;/&quot;</span> &amp;&amp; !context.Response.HasStarted)</span><br><span class="line">    &#123;</span><br><span class="line">        Console.WriteLine(<span class="string">&quot;中間件 2 - 即將拋出異常&quot;</span>);</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> Exception(<span class="string">&quot;中間件 2 返回時拋出異常&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Console.WriteLine(<span class="string">$&quot;中間件 2 - 返回 [<span class="subst">&#123;currentPath&#125;</span>]&quot;</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 5. 首頁路由</span></span><br><span class="line">app.MapGet(<span class="string">&quot;/&quot;</span>, () =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    Console.WriteLine(<span class="string">&quot;處理首頁請求 [/]&quot;</span>);</span><br><span class="line">    <span class="comment">//return Results.Text(&quot;Hello World!&quot;, &quot;text/plain&quot;);</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 6. 錯誤處理路由</span></span><br><span class="line">app.Map(<span class="string">&quot;/error&quot;</span>, <span class="keyword">async</span> context =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    Console.WriteLine(<span class="string">&quot;進入錯誤處理頁面 [/error]&quot;</span>);</span><br><span class="line">    <span class="keyword">var</span> exceptionFeature =</span><br><span class="line">        context.Features.Get&lt;Microsoft.AspNetCore.Diagnostics.IExceptionHandlerPathFeature&gt;();</span><br><span class="line">    <span class="keyword">var</span> error = exceptionFeature?.Error;</span><br><span class="line">    <span class="keyword">var</span> originalPath = exceptionFeature?.Path;</span><br><span class="line"></span><br><span class="line">    Console.WriteLine(<span class="string">$&quot;原始請求路徑: <span class="subst">&#123;originalPath&#125;</span>&quot;</span>);</span><br><span class="line">    Console.WriteLine(<span class="string">$&quot;捕捉到的錯誤: <span class="subst">&#123;error?.Message&#125;</span>&quot;</span>);</span><br><span class="line"></span><br><span class="line">    context.Response.ContentType = <span class="string">&quot;text/plain&quot;</span>;</span><br><span class="line">    <span class="keyword">await</span> context.Response.WriteAsync(</span><br><span class="line">        <span class="string">$&quot;錯誤已被處理！\n&quot;</span> +</span><br><span class="line">        <span class="string">$&quot;原始請求: <span class="subst">&#123;originalPath&#125;</span>\n&quot;</span> +</span><br><span class="line">        <span class="string">$&quot;錯誤信息: <span class="subst">&#123;error?.Message&#125;</span>&quot;</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">app.Run();</span><br></pre></td></tr></table></figure></div>
-
-<p>result :</p>
-<div class="code-container" data-rel="Txt"><figure class="iseeu highlight txt"><table><tr><td class="code"><pre><span class="line">request: &quot;/&quot;</span><br><span class="line">1. 中間件 1 - 進入 [/]</span><br><span class="line">2. 中間件 2 - 進入 [/]</span><br><span class="line">3. 處理首頁請求 [/]</span><br><span class="line">4. 中間件 2 - 即將拋出異常</span><br><span class="line">5. 觸發 app.UseExceptionHandler(&quot;/error&quot;);</span><br><span class="line"></span><br><span class="line">request: &quot;/error&quot;</span><br><span class="line">1. 中間件 1 - 進入 [/error]</span><br><span class="line">2. 中間件 2 - 進入 [/error]</span><br><span class="line">3. 進入錯誤處理頁面 [/error]</span><br><span class="line">   原始請求路徑: /</span><br><span class="line">   捕捉到的錯誤 中間件 2 - 即將拋出異常</span><br><span class="line">4. 中間件 2 - 返回 [/error]</span><br><span class="line">5. 中間件 1 - 返回 [/error]</span><br></pre></td></tr></table></figure></div>
-
-<p>Don’t call next.Invoke during or after the response has been sent to the client.</p>
-<h2 id="MVC-Endpoint"><a href="#MVC-Endpoint" class="headerlink" title="MVC Endpoint"></a>MVC Endpoint</h2><p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/blog.github.io/2024/10/22/netCore-middleware/MVCEndpoint.png"
-                      alt="MVCEndpoint"
-                ></p>
 ]]></content>
       <categories>
         <category>Backend</category>
