@@ -13,7 +13,7 @@
     
     <!--- Seo Part-->
     
-    <link rel="canonical" href="https://tom00qq.github.io/blog.github.io/2024/11/06/taskall/"/>
+    <link rel="canonical" href="https://tom00qq.github.io/blog.github.io/2024/10/22/google-recpatcha/"/>
     <meta name="robots" content="index,follow">
     <meta name="googlebot" content="index,follow">
     <meta name="revisit-after" content="1 days">
@@ -21,18 +21,22 @@
     
     
         
-        <meta name="description" content="情境假如有一個系統需要客戶的服務歷程，則資料可能由以下來源組成，並由 1 支 api 封裝彙整好的資訊。  A: 客戶基本資料 B: 服務紀錄明細 C: 服務業務資訊  比起取得 A 後等待回應再取 B 再等待回應取 C，採平行方式一次取 Ａ、Ｂ、Ｃ 並等待一次回應更省時。 逐一取得資料需要一個等一個 123var A &#x3D; await this._aprService.GetAsync(&amp;quot">
+        <meta name="description" content="功能防範機器人  提交大量垃圾訊息 試錯法暴力破解敏感資訊 大量自動註冊 短時間大量請求  級別Essentials、Standard、Enterprise 只要 Google Cloud project 綁定付款帳戶就有 Standard 級別，每月 reCAPTCHA 服務流量到達一定數量則自動升為 Enterprise。Standard、Enterprise 級別的評估分數有 11 leve">
 <meta property="og:type" content="article">
-<meta property="og:title" content=".NET 中如何平行發送 API">
-<meta property="og:url" content="https://tom00qq.github.io/blog.github.io/2024/11/06/taskAll/index.html">
+<meta property="og:title" content="Google reCAPTCHA For Web">
+<meta property="og:url" content="https://tom00qq.github.io/blog.github.io/2024/10/22/google-recpatcha/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="情境假如有一個系統需要客戶的服務歷程，則資料可能由以下來源組成，並由 1 支 api 封裝彙整好的資訊。  A: 客戶基本資料 B: 服務紀錄明細 C: 服務業務資訊  比起取得 A 後等待回應再取 B 再等待回應取 C，採平行方式一次取 Ａ、Ｂ、Ｃ 並等待一次回應更省時。 逐一取得資料需要一個等一個 123var A &#x3D; await this._aprService.GetAsync(&amp;quot">
+<meta property="og:description" content="功能防範機器人  提交大量垃圾訊息 試錯法暴力破解敏感資訊 大量自動註冊 短時間大量請求  級別Essentials、Standard、Enterprise 只要 Google Cloud project 綁定付款帳戶就有 Standard 級別，每月 reCAPTCHA 服務流量到達一定數量則自動升為 Enterprise。Standard、Enterprise 級別的評估分數有 11 leve">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2024-11-06T00:11:13.000Z">
-<meta property="article:modified_time" content="2025-03-26T11:05:37.935Z">
+<meta property="og:image" content="https://tom00qq.github.io/blog.github.io/2024/10/22/google-recpatcha/reCAPTCHAFlow.png">
+<meta property="og:image" content="https://tom00qq.github.io/blog.github.io/2024/10/22/google-recpatcha/set-site-key.png">
+<meta property="og:image" content="https://tom00qq.github.io/blog.github.io/2024/10/22/google-recpatcha/set-score-key.png">
+<meta property="article:published_time" content="2024-10-22T00:22:15.000Z">
+<meta property="article:modified_time" content="2025-03-26T11:03:01.005Z">
 <meta property="article:author" content="John Doe">
-<meta property="article:tag" content=".NET">
+<meta property="article:tag" content="Ｇoogle APIs">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tom00qq.github.io/blog.github.io/2024/10/22/google-recpatcha/reCAPTCHAFlow.png">
     
     
     <!--- Icon Part-->
@@ -44,7 +48,7 @@
     
     <title>
         
-            .NET 中如何平行發送 API | BLOG
+            Google reCAPTCHA For Web | BLOG
         
     </title>
 
@@ -318,7 +322,7 @@
 		<div class="article-title relative w-full">
 			
 			<div class="w-full flex items-center pt-6 justify-start">
-				<h1 class="article-title-regular text-second-text-color tracking-tight text-4xl md:text-6xl font-semibold px-2 sm:px-6 md:px-8 py-3">.NET 中如何平行發送 API</h1>
+				<h1 class="article-title-regular text-second-text-color tracking-tight text-4xl md:text-6xl font-semibold px-2 sm:px-6 md:px-8 py-3">Google reCAPTCHA For Web</h1>
 			</div>
 			
 		</div>
@@ -337,15 +341,15 @@
 					<div class="article-meta-info">
     <span class="article-date article-meta-item">
         <i class="fa-regular fa-pen-fancy"></i>&nbsp;
-        <span class="desktop">2024-11-06 08:11:13</span>
-        <span class="mobile">2024-11-06 08:11:13</span>
+        <span class="desktop">2024-10-22 08:22:15</span>
+        <span class="mobile">2024-10-22 08:22:15</span>
         <span class="hover-info">Created</span>
     </span>
     
         <span class="article-date article-meta-item">
             <i class="fa-regular fa-wrench"></i>&nbsp;
-            <span class="desktop">2025-03-26 19:05:37</span>
-            <span class="mobile">2025-03-26 19:05:37</span>
+            <span class="desktop">2025-03-26 19:03:01</span>
+            <span class="mobile">2025-03-26 19:03:01</span>
             <span class="hover-info">Updated</span>
         </span>
     
@@ -359,7 +363,7 @@
                     
                         
                         <li>
-                            <a href="/blog.github.io/categories/Backend/">Backend</a>&nbsp;
+                            <a href="/blog.github.io/categories/Frontend/">Frontend</a>&nbsp;
                         </li>
                     
                     
@@ -373,7 +377,7 @@
             <ul>
                 
                     <li>
-                        <a href="/blog.github.io/tags/NET/">.NET</a>&nbsp;
+                        <a href="/blog.github.io/tags/Google-APIs/">Ｇoogle APIs</a>&nbsp;
                     </li>
                 
             </ul>
@@ -395,72 +399,67 @@
 
 
 		<div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
-			<h2 id="情境"><a href="#情境" class="headerlink" title="情境"></a>情境</h2><p>假如有一個系統需要客戶的服務歷程，則資料可能由以下來源組成，並由 1 支 api 封裝彙整好的資訊。</p>
+			<h2 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h2><p>防範機器人</p>
 <ul>
-<li>A: 客戶基本資料</li>
-<li>B: 服務紀錄明細</li>
-<li>C: 服務業務資訊</li>
+<li>提交大量垃圾訊息</li>
+<li>試錯法暴力破解敏感資訊</li>
+<li>大量自動註冊</li>
+<li>短時間大量請求</li>
 </ul>
-<p>比起取得 A 後等待回應再取 B 再等待回應取 C，採平行方式一次取 Ａ、Ｂ、Ｃ 並等待一次回應更省時。</p>
-<p>逐一取得資料需要一個等一個</p>
-<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> A = <span class="keyword">await</span> <span class="keyword">this</span>._aprService.GetAsync(<span class="string">&quot;/customers&quot;</span>);</span><br><span class="line"><span class="keyword">var</span> B = <span class="keyword">await</span> <span class="keyword">this</span>._aprService.GetAsync(<span class="string">&quot;/servedRecords&quot;</span>);</span><br><span class="line"><span class="keyword">var</span> C = <span class="keyword">await</span> <span class="keyword">this</span>._aprService.GetAsync(<span class="string">&quot;/sales&quot;</span>);</span><br></pre></td></tr></table></figure></div>
-
-<br/>
-
-<p>上述情境下，.NET 提供 Task.WhenAll( ) 來支援平行發送 Task ( 請求 &#x2F; 任務 )</p>
-<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> task1 = Task.FromResult(<span class="number">1</span>);</span><br><span class="line"><span class="keyword">var</span> task2 = Task.FromResult(<span class="number">2</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">int</span>[]? results = <span class="keyword">await</span> Task.WhenAll(task1, task2);</span><br></pre></td></tr></table></figure></div>
-
-<p>實際應用中，Tasks 回傳的結果通常型別不同，可使用 tuple assignment 取得結果</p>
-<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> apiA = <span class="keyword">this</span>._apiService.GetAsync&lt;ObjInfo&gt;(<span class="string">&quot;/api/Object&quot;</span>);</span><br><span class="line"><span class="keyword">var</span> apiB = <span class="keyword">this</span>._apiService.GetAsync&lt;CustomerInfo&gt;(<span class="string">&quot;/api/CustomerInfo&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// results 無法判斷型別因此會錯誤</span></span><br><span class="line"><span class="comment">// var results = await Task.WhenAll(apiA, apiB);</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">await</span> Task.WhenAll(apiA, apiB);</span><br><span class="line"><span class="keyword">var</span> (apiAResult,apiBResult) = (<span class="keyword">await</span> apiA,<span class="keyword">await</span> apiB);</span><br></pre></td></tr></table></figure></div>
-
-<p>除了常見的 WhenAll，.NET 另外提供了 WaitAll 方法。</p>
-<br/>
-
-<h2 id="Task-WhenAll-Task-WaitAll-差異在哪"><a href="#Task-WhenAll-Task-WaitAll-差異在哪" class="headerlink" title="Task.WhenAll( ) &#x2F; Task.WaitAll( ) 差異在哪 ?"></a>Task.WhenAll( ) &#x2F; Task.WaitAll( ) 差異在哪 ?</h2><p>WhenAll：</p>
-<ul>
-<li>非同步方法，不會阻塞執行緒，適合異步程式設計</li>
+<h2 id="級別"><a href="#級別" class="headerlink" title="級別"></a>級別</h2><p>Essentials、Standard、Enterprise</p>
+<p>只要 Google Cloud project 綁定付款帳戶就有 Standard 級別，每月 reCAPTCHA 服務流量到達一定數量則自動升為 Enterprise。<br>Standard、Enterprise 級別的評估分數有 11 levels 提供更細膩的評判標準。</p>
+<p>參考: <a class="link"   target="_blank" rel="noopener" href="https://cloud.google.com/recaptcha/docs/compare-tiers" >https://cloud.google.com/recaptcha/docs/compare-tiers<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></p>
+<h2 id="reCAPTCHA-Keys"><a href="#reCAPTCHA-Keys" class="headerlink" title="reCAPTCHA Keys"></a>reCAPTCHA Keys</h2><ul>
+<li>( v2 版本 ) Checkbox key，需使用者手動驗證，常見的九宮格驗證</li>
+<li>( v3 版本 ) Score-based key，自動驗證 (官方推薦)</li>
 </ul>
-<p>WaitAll：</p>
-<ul>
-<li>同步方法，會阻塞執行緒，適合同步執行的場景</li>
-</ul>
-<br/>
-其實兩者的回傳結果也不同，不過，都可藉由 tuple assignment 取得資料。
-
-<br/>
-
-<p>Tasks 回傳結果:</p>
-<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> apiA = <span class="keyword">this</span>._apiService.GetAsync&lt;ObjInfo&gt;(<span class="string">&quot;/api/Object&quot;</span>);</span><br><span class="line"><span class="keyword">var</span> apiB = <span class="keyword">this</span>._apiService.GetAsync&lt;CustomerInfo&gt;(<span class="string">&quot;/api/CustomerInfo&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> resultA = Task.WhenAll(apiA, apiB);</span><br><span class="line"><span class="comment">// 回傳型別: Task?</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> resultB =  <span class="keyword">await</span> Task.WhenAll(apiA, apiB);</span><br><span class="line"><span class="comment">// 回傳型別: 錯誤因為 apiA,apiB 結果不同</span></span><br><span class="line"></span><br><span class="line">Task.WaitAll(apiA, apiB);</span><br><span class="line"><span class="comment">// 回傳型別: void</span></span><br></pre></td></tr></table></figure></div>
-
-<p>都可取出 Task 各自回傳的結果:</p>
-<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"> <span class="keyword">var</span> apiA = <span class="keyword">this</span>._apiService.GetAsync&lt;ObjInfo&gt;(<span class="string">&quot;/api/Object&quot;</span>);</span><br><span class="line"> <span class="keyword">var</span> apiB = <span class="keyword">this</span>._apiService.GetAsync&lt;CustomerInfo&gt;(<span class="string">&quot;/api/CustomerInfo&quot;</span>);</span><br><span class="line"></span><br><span class="line"> <span class="keyword">await</span> Task.WhenAll(apiA, apiB);</span><br><span class="line"></span><br><span class="line"> <span class="comment">// or</span></span><br><span class="line"></span><br><span class="line"> <span class="comment">//  Task.WaitAll(apiA, apiB);</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> (apiAResult,apiBResult) = (<span class="keyword">await</span> apiA,<span class="keyword">await</span> apiB);</span><br></pre></td></tr></table></figure></div>
-
-<br/>
-
-<h2 id="錯誤處理"><a href="#錯誤處理" class="headerlink" title="錯誤處理"></a>錯誤處理</h2><p>當 Tasks 發生錯誤時，回傳時機分為</p>
+<p>參考: <a class="link"   target="_blank" rel="noopener" href="https://cloud.google.com/recaptcha/docs/choose-key-type" >https://cloud.google.com/recaptcha/docs/choose-key-type<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></p>
+<h2 id="運作"><a href="#運作" class="headerlink" title="運作"></a>運作</h2><p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/blog.github.io/2024/10/22/google-recpatcha/reCAPTCHAFlow.png"
+                      alt="reCAPTCHAFlow"
+                ></p>
 <ol>
-<li>全部處理完成後回覆</li>
-<li>只要有 1 個錯誤發生立即回覆</li>
+<li>使用者行為，如送出表單時，發送監測記錄給 reCAPTCHA</li>
+<li>reCAPTCHA 回傳加密的分析結果</li>
+<li>前端須再將加密結果，交由後端發送給 reCAPTCHA 解密</li>
+<li>reCAPTCHA 回應給後端</li>
+<li>開發人員依據評估分數決定行為，如:判斷無效表單</li>
 </ol>
-<br/>
+<h2 id="設定總覽"><a href="#設定總覽" class="headerlink" title="設定總覽"></a>設定總覽</h2><p>Google Cloud</p>
+<ol>
+<li>啟用 reCAPTCHA Enterprise API</li>
+<li>在 API 和服務的”憑證”建立金鑰，金鑰可以設定限制應用程式、API ( 功用: 解密 reCAPTCHA 評估結果 )<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/blog.github.io/2024/10/22/google-recpatcha/set-site-key.png"
+                      alt="set-site-key"
+                ></li>
+<li>在安全性的”reCAPTCHA”，建立金鑰 ( 功用: 監測、送出監測記錄 )<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/blog.github.io/2024/10/22/google-recpatcha/set-score-key.png"
+                      alt="set-score-key"
+                ></li>
+</ol>
+<p>網站</p>
+<ol>
+<li>要監測的頁面 head 標籤載入</li>
+</ol>
+<div class="code-container" data-rel="Html"><figure class="iseeu highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;https://www.google.com/recaptcha/enterprise.js?render=$&#123;RECAPTCHA_SITE_KEY&#125;&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br></pre></td></tr></table></figure></div>
 
-<p>全部處理完成後回覆 :</p>
-<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">var</span> task1 = Task.Run(() =&gt; <span class="keyword">throw</span> <span class="keyword">new</span> InvalidOperationException(<span class="string">&quot;Task 1 failed&quot;</span>));</span><br><span class="line">    <span class="keyword">var</span> task2 = Task.Run(() =&gt; <span class="keyword">throw</span> <span class="keyword">new</span> ArgumentException(<span class="string">&quot;Task 2 failed&quot;</span>));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// var allTasks = Task.WhenAll(task1, task2);</span></span><br><span class="line">    <span class="comment">// allTasks.Wait()</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// or</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Task.WaitAll(task1, task2);</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">catch</span> (AggregateException ex)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 錯誤集合可以捕捉所有 Task 錯誤</span></span><br><span class="line">    <span class="keyword">foreach</span> (<span class="keyword">var</span> innerException <span class="keyword">in</span> ex.InnerExceptions)</span><br><span class="line">    &#123;</span><br><span class="line">        Console.WriteLine(<span class="string">$&quot;Exception: <span class="subst">&#123;innerException.Message&#125;</span>&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+<ol start="2">
+<li>使用者行為觸發送出監測記錄</li>
+</ol>
+<div class="code-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 送出表單觸發</span></span><br><span class="line"><span class="keyword">const</span> siteKey = <span class="variable constant_">RECAPTCHA_SITE_KEY</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (!siteKey) &#123;</span><br><span class="line">  <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">Error</span>(<span class="string">&quot;reCAPTCHA site key is not defined&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 獲取加密結果</span></span><br><span class="line"><span class="keyword">const</span> token = <span class="keyword">await</span> grecaptcha.<span class="property">enterprise</span>.<span class="title function_">execute</span>(siteKey, &#123;</span><br><span class="line">  actionName,</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (!token) &#123;</span><br><span class="line">  <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">Error</span>(<span class="string">&quot;Failed to obtain reCAPTCHA token&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 解析結果並看後端要回傳什麼處置</span></span><br><span class="line"><span class="keyword">await</span> <span class="title function_">getRecaptchaResult</span>(token, actionName);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 前端處理...</span></span><br></pre></td></tr></table></figure></div>
 
-<p>只要有 1 個錯誤發生立即回覆，因此只能抓到 1 個錯誤 :</p>
-<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">var</span> task1 = Task.Run(() =&gt; <span class="keyword">throw</span> <span class="keyword">new</span> InvalidOperationException(<span class="string">&quot;Task 1 failed&quot;</span>));</span><br><span class="line">    <span class="keyword">var</span> task2 = Task.Run(() =&gt; <span class="keyword">throw</span> <span class="keyword">new</span> ArgumentException(<span class="string">&quot;Task 2 failed&quot;</span>));</span><br><span class="line"></span><br><span class="line">    <span class="keyword">await</span> Task.WhenAll(task1, task2);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">catch</span> (Exception ex)</span><br><span class="line">&#123;</span><br><span class="line">     Console.WriteLine(<span class="string">$&quot;捕獲到異常: <span class="subst">&#123;ex.Message&#125;</span>&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+<ol start="3">
+<li>後端</li>
+</ol>
+<div class="code-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 後端解密結果</span></span><br><span class="line"><span class="keyword">const</span> response = <span class="keyword">await</span> axios.<span class="title function_">post</span>(</span><br><span class="line">  <span class="string">`https://recaptchaenterprise.googleapis.com/v1/projects/<span class="subst">$&#123;projectName&#125;</span>/assessments?key=<span class="subst">$&#123;RECAPTCHA_API_KEY&#125;</span>`</span>,</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="attr">event</span>: &#123;</span><br><span class="line">      <span class="attr">token</span>: req.<span class="property">body</span>.<span class="property">token</span>,</span><br><span class="line">      <span class="attr">siteKey</span>: <span class="variable constant_">RECAPTCHA_SITE_KEY</span>,</span><br><span class="line">      <span class="attr">expectedAction</span>: req.<span class="property">body</span>.<span class="property">actionName</span>,</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> data = <span class="keyword">await</span> response.<span class="property">data</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// token 無效</span></span><br><span class="line"><span class="keyword">if</span> (!data.<span class="property">tokenProperties</span>.<span class="property">valid</span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> res.<span class="title function_">status</span>(<span class="number">500</span>).<span class="title function_">json</span>(&#123;</span><br><span class="line">    <span class="attr">message</span>: <span class="string">&quot;Invalid token from google recaptcha enterprise API&quot;</span>,</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 非預期 action</span></span><br><span class="line"><span class="keyword">if</span> (!actionNames.<span class="title function_">includes</span>(data.<span class="property">tokenProperties</span>.<span class="property">action</span>)) &#123;</span><br><span class="line">  <span class="keyword">return</span> res.<span class="title function_">status</span>(<span class="number">500</span>).<span class="title function_">json</span>(&#123;</span><br><span class="line">    <span class="attr">message</span>: <span class="string">&quot;Invalid action from google recaptcha enterprise API&quot;</span>,</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> score = data.<span class="property">riskAnalysis</span>.<span class="property">score</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 後端處理...</span></span><br></pre></td></tr></table></figure></div>
 
-<ul>
-<li>WhenAll :<ul>
-<li>全部處理完成後回覆</li>
-<li>( 搭配使用 await ) 只要有 1 個錯誤發生立則即回覆</li>
-</ul>
-</li>
-<li>WaitAll : 全部處理完成後回覆<ul>
-<li>全部處理完成後回覆</li>
-</ul>
-</li>
-</ul>
+<p>參考:<br><br/><br><a class="link"   target="_blank" rel="noopener" href="https://cloud.google.com/recaptcha/docs/setup-overview-web" >https://cloud.google.com/recaptcha/docs/setup-overview-web<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a><br><br/><br><a class="link"   target="_blank" rel="noopener" href="https://cloud.google.com/recaptcha/docs/instrument-web-pages" >https://cloud.google.com/recaptcha/docs/instrument-web-pages<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></p>
 
 		</div>
 
@@ -468,18 +467,18 @@
 		<div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
 			<div class="article-copyright-info-container">
     <ul>
-        <li><strong>Title:</strong> .NET 中如何平行發送 API</li>
+        <li><strong>Title:</strong> Google reCAPTCHA For Web</li>
         <li><strong>Author:</strong> TomHung</li>
         <li><strong>Created at
-                :</strong> 2024-11-06 08:11:13</li>
+                :</strong> 2024-10-22 08:22:15</li>
         
             <li>
                 <strong>Updated at
-                    :</strong> 2025-03-26 19:05:37
+                    :</strong> 2025-03-26 19:03:01
             </li>
         
         <li>
-            <strong>Link:</strong> https://tom00qq.github.io/blog.github.io/2024/11/06/taskAll/
+            <strong>Link:</strong> https://tom00qq.github.io/blog.github.io/2024/10/22/google-recpatcha/
         </li>
         <li>
             <strong>
@@ -501,7 +500,7 @@
 		<ul class="post-tags-box text-lg mt-1.5 flex-wrap justify-center flex md:hidden">
 			
 			<li class="tag-item mx-0.5">
-				<a href="/blog.github.io/tags/NET/">#.NET</a>&nbsp;
+				<a href="/blog.github.io/tags/Google-APIs/">#Ｇoogle APIs</a>&nbsp;
 			</li>
 			
 		</ul>
@@ -513,12 +512,12 @@
 		<div class="article-nav my-8 flex justify-between items-center px-2 sm:px-6 md:px-8">
 			
 			<div class="article-prev border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
-				<a class="prev" rel="prev" href="/blog.github.io/2024/11/18/Is-it-OK-to-code-like-this/">
+				<a class="prev" rel="prev" href="/blog.github.io/2024/11/06/taskAll/">
 					<span class="left arrow-icon flex justify-center items-center">
 						<i class="fa-solid fa-chevron-left"></i>
 					</span>
 					<span class="title flex justify-center items-center">
-						<span class="post-nav-title-item">這樣寫 Code 好不好 ?</span>
+						<span class="post-nav-title-item">.NET 中如何平行發送 API</span>
 						<span class="post-nav-item">Prev posts</span>
 					</span>
 				</a>
@@ -526,9 +525,9 @@
 			
 			
 			<div class="article-next border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
-				<a class="next" rel="next" href="/blog.github.io/2024/10/22/google-recpatcha/">
+				<a class="next" rel="next" href="/blog.github.io/2024/10/22/netCore-middleware/">
 					<span class="title flex justify-center items-center">
-						<span class="post-nav-title-item">Google reCAPTCHA For Web</span>
+						<span class="post-nav-title-item">netCore-middleware</span>
 						<span class="post-nav-item">Next posts</span>
 					</span>
 					<span class="right arrow-icon flex justify-center items-center">
@@ -549,8 +548,8 @@
 		<div class="post-toc-wrap">
 	<div class="post-toc">
 		<div class="toc-title">On this page</div>
-		<div class="page-title">.NET 中如何平行發送 API</div>
-		<ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%83%85%E5%A2%83"><span class="nav-text">情境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Task-WhenAll-Task-WaitAll-%E5%B7%AE%E7%95%B0%E5%9C%A8%E5%93%AA"><span class="nav-text">Task.WhenAll( ) &#x2F; Task.WaitAll( ) 差異在哪 ?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%8C%AF%E8%AA%A4%E8%99%95%E7%90%86"><span class="nav-text">錯誤處理</span></a></li></ol>
+		<div class="page-title">Google reCAPTCHA For Web</div>
+		<ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%9F%E8%83%BD"><span class="nav-text">功能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B4%9A%E5%88%A5"><span class="nav-text">級別</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#reCAPTCHA-Keys"><span class="nav-text">reCAPTCHA Keys</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%81%8B%E4%BD%9C"><span class="nav-text">運作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A8%AD%E5%AE%9A%E7%B8%BD%E8%A6%BD"><span class="nav-text">設定總覽</span></a></li></ol>
 
 	</div>
 </div>

@@ -1,0 +1,451 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>這樣寫 Code 好不好 ?</title>
+    <url>/blog.github.io/2024/11/18/Is-it-OK-to-code-like-this/</url>
+    <content><![CDATA[<h3 id="單元總覽"><a href="#單元總覽" class="headerlink" title="單元總覽"></a>單元總覽</h3><ul>
+<li>類別設計 &#x2F; 不可變性質<ul>
+<li><a href="#%E7%A9%A9%E5%9B%BA%E7%9A%84%E9%A1%9E%E5%88%A5%E8%A8%AD%E8%A8%88">穩固的類別設計</a></li>
+<li><a href="#%E5%80%BC%E7%89%A9%E4%BB%B6">值物件</a></li>
+</ul>
+</li>
+<li>低內聚<ul>
+<li><a href="#%E6%9C%80%E5%B0%91%E7%9F%A5%E8%AD%98%E5%8E%9F%E5%89%87">最少知識原則</a></li>
+<li><a href="#%E8%AA%A4%E7%94%A8%E7%9A%84%E5%85%B1%E7%94%A8%E9%A1%9E%E5%88%A5">誤用的 Utility &#x2F;Common 類別</a></li>
+<li>[分散的初始化函式]（）</li>
+</ul>
+</li>
+</ul>
+<h3 id="穩固的類別設計"><a href="#穩固的類別設計" class="headerlink" title="穩固的類別設計"></a>穩固的類別設計</h3><p>過度彈性的類別在簡易的系統中不是問題，在經年累月的系統中卻是造成不穩定的隱形殺手，案例如下：</p>
+<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Money</span> &#123;</span><br><span class="line">    <span class="comment">// 金額</span></span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> amount &#123;<span class="keyword">get</span>;<span class="keyword">set</span>;&#125;</span><br><span class="line">    <span class="comment">// 幣值</span></span><br><span class="line">    <span class="keyword">public</span> Currency currency &#123;<span class="keyword">get</span>;<span class="keyword">set</span>;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// other place in applications...</span></span><br><span class="line"><span class="keyword">var</span> money = <span class="keyword">new</span> Money();</span><br><span class="line"></span><br><span class="line">money.amount = <span class="number">100</span>;</span><br><span class="line">money.currency = <span class="keyword">new</span> Currency.getinstance(locale.JP);</span><br><span class="line"></span><br><span class="line"><span class="comment">// ignore hundred lines of codes...</span></span><br><span class="line"></span><br><span class="line">money.amount = <span class="number">-100</span>; <span class="comment">// 無效值被傳入</span></span><br><span class="line">money.currency = <span class="keyword">new</span> Currency.getinstance(locale.US); <span class="comment">// 內容被隨處任意覆蓋</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// calculate</span></span><br><span class="line"><span class="keyword">var</span> moneyB = <span class="keyword">new</span> Money();</span><br><span class="line">moneyB.amount = <span class="number">1000</span>;</span><br><span class="line">moneyB.currency = <span class="keyword">new</span> Currency.getinstance(locale.US);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> total = money.amount + moneyB.amount; <span class="comment">// 幣值不同卻可以計算，且計算邏輯暴露在 Monrey 外</span></span><br></pre></td></tr></table></figure></div>
+
+<p>建立穩固的類別可以遵照：</p>
+<ul>
+<li>建構式初始化值</li>
+<li>初始化時檢查有效性</li>
+<li>類別成員預設為不可修正</li>
+<li>修正時回傳傳入與回傳物件</li>
+</ul>
+<p>例如</p>
+<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Money</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Money</span>(<span class="params"><span class="built_in">int</span> amount , Currency currency</span>)</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(amount &lt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">&quot;金額需大於 0&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(currency == <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">&quot;幣值不得為空&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">this</span>._amount = amount;</span><br><span class="line">        <span class="keyword">this</span>._currency = currency;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 金額</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> <span class="built_in">int</span> _amount;</span><br><span class="line">    <span class="comment">// 幣值</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> Currency _currency;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> Amount</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">get</span> &#123; <span class="keyword">return</span> _amount; &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> Currency Currency</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">get</span> &#123; <span class="keyword">return</span> _currency; &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Money <span class="title">Add</span>(<span class="params">Money other</span>)</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 檢驗幣值</span></span><br><span class="line">        <span class="keyword">if</span>(!<span class="keyword">this</span>._currency.Equals(other.Currency)) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">&quot;幣值不同&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">var</span> added = <span class="keyword">this</span>._amount + other.Amount;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 透過初始化再次確保值通過檢驗</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Money(added,<span class="keyword">this</span>._currency);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<h3 id="值物件"><a href="#值物件" class="headerlink" title="值物件"></a>值物件</h3><p>把程式碼中的值已物件表示，來提高程式碼的嚴謹與內聚程度。</p>
+<p>比如</p>
+<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Money</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> Amount;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 幣值成員，可以成立比如： &quot;JP&quot; &quot;US&quot; ...，</span></span><br><span class="line">    <span class="comment">// 但彈性太大了帶 &quot;Apple&quot; 對系統說也不會有錯</span></span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">string</span> Currency;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 同理 otherAmount 可以帶入 count,page ... 等數字型別的參數，</span></span><br><span class="line">    <span class="comment">// 程式並不會報錯</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Money <span class="title">Add</span>(<span class="params"><span class="built_in">int</span> otherAmount</span>)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.Amount + otherAmount;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>改用物件來取代原始型別的值，雖然較冗長，但能確保接受與輸出的值都是正確且相關的。</p>
+<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Money</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 省略 ...</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> Currency Currency</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">get</span> &#123; <span class="keyword">return</span> _currency; &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Money <span class="title">Add</span>(<span class="params">Money other</span>)</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(!<span class="keyword">this</span>._currency.Equals(other.Currency)) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">&quot;幣值不同&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">var</span> added = <span class="keyword">this</span>._amount + other.Amount;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Money(added,<span class="keyword">this</span>._currency);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<br/>
+
+<h3 id="誤用的共用類別"><a href="#誤用的共用類別" class="headerlink" title="誤用的共用類別"></a>誤用的共用類別</h3><p>在系統開發中，若同一段程式碼經常需要重複使用，通常會寫成靜態函式並放置於某個共用類別中，取名為：Utilty 或 Common …。</p>
+<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Common</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 計算含稅金額</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="built_in">int</span> <span class="title">calcAmmonutIcludingTax</span>(<span class="params"><span class="built_in">int</span> ammount,<span class="built_in">int</span> taxRate</span>)</span> &#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 轉換數字成中文數字</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="built_in">string</span> <span class="title">convertNumberToChinese</span>(<span class="params"><span class="built_in">string</span> text</span>)</span> &#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>不自覺 Common 將越多越雜，造成“低內聚”的情況。低內聚，比如有需求要修改稅務相關邏輯時，如果系統稅務的邏輯同時散落於各處，置於 Common 中的相關函式，因為難以一時聯想到要進來確認則可能導致修改時遺漏而出錯。</p>
+<p>會造成上述原因使因為誤會了 “常用” 與 ”通用“，通用不涉及特定商業邏輯，比如：例外處理、錯誤檢測、大小寫轉換，而常用則相反，以上述案例來說，系統中可能很多地方需要計算含稅金額，這時更好的處理方式為，新增一個類比如：</p>
+<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AmmonutIcludingTax</span> &#123;</span><br><span class="line">    <span class="comment">// calcAmmonutIcludingTax ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<br/>
+
+<h3 id="最少知識原則"><a href="#最少知識原則" class="headerlink" title="最少知識原則"></a>最少知識原則</h3><p>又可理解為，對物件“只下令，不詢問”，反例比如：</p>
+<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Address</span> &#123;</span><br><span class="line">   <span class="built_in">string</span> City</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Customer</span> &#123;</span><br><span class="line">    Address Address</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">OrderHandler</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">HandleOrder</span>(<span class="params">Customer customer</span>)</span> &#123;</span><br><span class="line">        <span class="built_in">string</span> city = customer.Address.City; <span class="comment">// 違反原則</span></span><br><span class="line">        Console.WriteLine(<span class="string">$&quot;<span class="subst">&#123;city&#125;</span> order has been handled.&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>此處，要得知 City 得知道 Customer &gt; Address &gt; City 層層關係，不但有過多資訊，且若是 Customer 的 Address 被移除或改變實作方式這邊就必須跟著修改。</p>
+<p>針對 City “只下令，不詢問”:</p>
+<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Address</span> &#123;</span><br><span class="line">   <span class="built_in">string</span> City</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Customer</span> &#123;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> Address Address</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">    <span class="keyword">public</span> <span class="built_in">string</span> <span class="title">GetCity</span>()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> Address.City;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">OrderHandler</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">HandleOrder</span>(<span class="params">Customer customer</span>)</span> &#123;</span><br><span class="line">        <span class="built_in">string</span> city = customer.GetCity(); <span class="comment">// 修正</span></span><br><span class="line">        Console.WriteLine(<span class="string">$&quot;<span class="subst">&#123;city&#125;</span> order has been handled.&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>如此，OrderHandler 完全不需要知道 Customer 內部其實是透過 Address 取得 City 的，且當 Address 與 City 的關係有改變時，也完全不關 如此，OrderHandler 的事，只要調整 Customer 物件即可。</p>
+<p>2024&#x2F;11&#x2F;19 持續更新中 …</p>
+]]></content>
+      <categories>
+        <category>Backend</category>
+      </categories>
+      <tags>
+        <tag>C#</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Google reCAPTCHA For Web</title>
+    <url>/blog.github.io/2024/10/22/google-recpatcha/</url>
+    <content><![CDATA[<h2 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h2><p>防範機器人</p>
+<ul>
+<li>提交大量垃圾訊息</li>
+<li>試錯法暴力破解敏感資訊</li>
+<li>大量自動註冊</li>
+<li>短時間大量請求</li>
+</ul>
+<h2 id="級別"><a href="#級別" class="headerlink" title="級別"></a>級別</h2><p>Essentials、Standard、Enterprise</p>
+<p>只要 Google Cloud project 綁定付款帳戶就有 Standard 級別，每月 reCAPTCHA 服務流量到達一定數量則自動升為 Enterprise。<br>Standard、Enterprise 級別的評估分數有 11 levels 提供更細膩的評判標準。</p>
+<p>參考: <a class="link"   href="https://cloud.google.com/recaptcha/docs/compare-tiers" >https://cloud.google.com/recaptcha/docs/compare-tiers<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></p>
+<h2 id="reCAPTCHA-Keys"><a href="#reCAPTCHA-Keys" class="headerlink" title="reCAPTCHA Keys"></a>reCAPTCHA Keys</h2><ul>
+<li>( v2 版本 ) Checkbox key，需使用者手動驗證，常見的九宮格驗證</li>
+<li>( v3 版本 ) Score-based key，自動驗證 (官方推薦)</li>
+</ul>
+<p>參考: <a class="link"   href="https://cloud.google.com/recaptcha/docs/choose-key-type" >https://cloud.google.com/recaptcha/docs/choose-key-type<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></p>
+<h2 id="運作"><a href="#運作" class="headerlink" title="運作"></a>運作</h2><p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/blog.github.io/2024/10/22/google-recpatcha/reCAPTCHAFlow.png"
+                      alt="reCAPTCHAFlow"
+                ></p>
+<ol>
+<li>使用者行為，如送出表單時，發送監測記錄給 reCAPTCHA</li>
+<li>reCAPTCHA 回傳加密的分析結果</li>
+<li>前端須再將加密結果，交由後端發送給 reCAPTCHA 解密</li>
+<li>reCAPTCHA 回應給後端</li>
+<li>開發人員依據評估分數決定行為，如:判斷無效表單</li>
+</ol>
+<h2 id="設定總覽"><a href="#設定總覽" class="headerlink" title="設定總覽"></a>設定總覽</h2><p>Google Cloud</p>
+<ol>
+<li>啟用 reCAPTCHA Enterprise API</li>
+<li>在 API 和服務的”憑證”建立金鑰，金鑰可以設定限制應用程式、API ( 功用: 解密 reCAPTCHA 評估結果 )<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/blog.github.io/2024/10/22/google-recpatcha/set-site-key.png"
+                      alt="set-site-key"
+                ></li>
+<li>在安全性的”reCAPTCHA”，建立金鑰 ( 功用: 監測、送出監測記錄 )<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/blog.github.io/2024/10/22/google-recpatcha/set-score-key.png"
+                      alt="set-score-key"
+                ></li>
+</ol>
+<p>網站</p>
+<ol>
+<li>要監測的頁面 head 標籤載入</li>
+</ol>
+<div class="code-container" data-rel="Html"><figure class="iseeu highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;https://www.google.com/recaptcha/enterprise.js?render=$&#123;RECAPTCHA_SITE_KEY&#125;&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<ol start="2">
+<li>使用者行為觸發送出監測記錄</li>
+</ol>
+<div class="code-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 送出表單觸發</span></span><br><span class="line"><span class="keyword">const</span> siteKey = <span class="variable constant_">RECAPTCHA_SITE_KEY</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (!siteKey) &#123;</span><br><span class="line">  <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">Error</span>(<span class="string">&quot;reCAPTCHA site key is not defined&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 獲取加密結果</span></span><br><span class="line"><span class="keyword">const</span> token = <span class="keyword">await</span> grecaptcha.<span class="property">enterprise</span>.<span class="title function_">execute</span>(siteKey, &#123;</span><br><span class="line">  actionName,</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (!token) &#123;</span><br><span class="line">  <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">Error</span>(<span class="string">&quot;Failed to obtain reCAPTCHA token&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 解析結果並看後端要回傳什麼處置</span></span><br><span class="line"><span class="keyword">await</span> <span class="title function_">getRecaptchaResult</span>(token, actionName);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 前端處理...</span></span><br></pre></td></tr></table></figure></div>
+
+<ol start="3">
+<li>後端</li>
+</ol>
+<div class="code-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 後端解密結果</span></span><br><span class="line"><span class="keyword">const</span> response = <span class="keyword">await</span> axios.<span class="title function_">post</span>(</span><br><span class="line">  <span class="string">`https://recaptchaenterprise.googleapis.com/v1/projects/<span class="subst">$&#123;projectName&#125;</span>/assessments?key=<span class="subst">$&#123;RECAPTCHA_API_KEY&#125;</span>`</span>,</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="attr">event</span>: &#123;</span><br><span class="line">      <span class="attr">token</span>: req.<span class="property">body</span>.<span class="property">token</span>,</span><br><span class="line">      <span class="attr">siteKey</span>: <span class="variable constant_">RECAPTCHA_SITE_KEY</span>,</span><br><span class="line">      <span class="attr">expectedAction</span>: req.<span class="property">body</span>.<span class="property">actionName</span>,</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> data = <span class="keyword">await</span> response.<span class="property">data</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// token 無效</span></span><br><span class="line"><span class="keyword">if</span> (!data.<span class="property">tokenProperties</span>.<span class="property">valid</span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> res.<span class="title function_">status</span>(<span class="number">500</span>).<span class="title function_">json</span>(&#123;</span><br><span class="line">    <span class="attr">message</span>: <span class="string">&quot;Invalid token from google recaptcha enterprise API&quot;</span>,</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 非預期 action</span></span><br><span class="line"><span class="keyword">if</span> (!actionNames.<span class="title function_">includes</span>(data.<span class="property">tokenProperties</span>.<span class="property">action</span>)) &#123;</span><br><span class="line">  <span class="keyword">return</span> res.<span class="title function_">status</span>(<span class="number">500</span>).<span class="title function_">json</span>(&#123;</span><br><span class="line">    <span class="attr">message</span>: <span class="string">&quot;Invalid action from google recaptcha enterprise API&quot;</span>,</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> score = data.<span class="property">riskAnalysis</span>.<span class="property">score</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 後端處理...</span></span><br></pre></td></tr></table></figure></div>
+
+<p>參考:<br><br/><br><a class="link"   href="https://cloud.google.com/recaptcha/docs/setup-overview-web" >https://cloud.google.com/recaptcha/docs/setup-overview-web<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a><br><br/><br><a class="link"   href="https://cloud.google.com/recaptcha/docs/instrument-web-pages" >https://cloud.google.com/recaptcha/docs/instrument-web-pages<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></p>
+]]></content>
+      <categories>
+        <category>Frontend</category>
+      </categories>
+      <tags>
+        <tag>Ｇoogle APIs</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>netCore-middleware</title>
+    <url>/blog.github.io/2024/10/22/netCore-middleware/</url>
+    <content><![CDATA[<h2 id="ASP-NET-Core-Middleware"><a href="#ASP-NET-Core-Middleware" class="headerlink" title="ASP.NET Core Middleware"></a>ASP.NET Core Middleware</h2><p>Middleware is software that’s assembled into an app pipeline to handle requests and responses , as below</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/blog.github.io/2024/10/22/netCore-middleware/request-delegate-pipeline.png"
+                      alt="request-delegate-pipeline"
+                ></p>
+<p><a class="link"   href="https://learn.microsoft.com/en-us/aspnet/core/fundamentals/middleware/?view=aspnetcore-8.0" >ref : ASP.NET Core Middleware<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></p>
+<p>it’s ok to setup middleware with single or chained multiples, example :</p>
+<p>ASP.NET Core Program.cs file with</p>
+<p>( single middleware return result directly )</p>
+<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> builder = WebApplication.CreateBuilder(args);</span><br><span class="line"><span class="keyword">var</span> app = builder.Build();</span><br><span class="line"></span><br><span class="line">app.Run(<span class="keyword">async</span> context =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">await</span> context.Response.WriteAsync(<span class="string">&quot;Hello world!&quot;</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">app.Run();</span><br></pre></td></tr></table></figure></div>
+
+<p>( chained middlewares by app.Use(…) )</p>
+<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> builder = WebApplication.CreateBuilder(args);</span><br><span class="line"><span class="keyword">var</span> app = builder.Build();</span><br><span class="line"></span><br><span class="line">app.Use(<span class="keyword">async</span> (context, next) =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Do work that can write to the Response.</span></span><br><span class="line">    <span class="keyword">await</span> next.Invoke();</span><br><span class="line">    <span class="comment">// Do logging or other work that doesn&#x27;t write to the Response.</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">app.Run(<span class="keyword">async</span> context =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">await</span> context.Response.WriteAsync(<span class="string">&quot;Hello from 2nd delegate.&quot;</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">app.Run();</span><br></pre></td></tr></table></figure></div>
+
+<h2 id="Short-circuiting-the-request-pipeline"><a href="#Short-circuiting-the-request-pipeline" class="headerlink" title="Short-circuiting the request pipeline"></a>Short-circuiting the request pipeline</h2><p>the request could Short-circuiting to avoid unnecessary work, ex : add an static file middleware to hanldle static file request when the middleware been triggered it would response and ignore the middleware after.</p>
+<h2 id="Run-delegates"><a href="#Run-delegates" class="headerlink" title="Run delegates"></a>Run delegates</h2><p>is the end of middleware , Run or Use keywords after the first Run keyword would not be called.</p>
+<h2 id="Middleware-order"><a href="#Middleware-order" class="headerlink" title="Middleware order"></a>Middleware order</h2><p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/blog.github.io/2024/10/22/netCore-middleware/middleware-pipeline.svg"
+                      alt="middleware-pipeline"
+                ></p>
+<p>official provided recommonded order for the middleware , but the user can control over order by own. ( the order is determine by the code order )</p>
+<p>Why is there official pre-ordered order recommonded ?</p>
+<ul>
+<li><strong>Ensure Correct Functionality</strong> : <code>UseAuthentication</code> must run before <code>UseAuthorization</code> because the user must be authenticated before checking their permissions</li>
+<li><strong>Optimize Performance</strong> : By processing certain tasks earlier, such as static file requests or health checks, you can bypass more complex operations like authentication when they aren’t needed<br>Why is the order important ?</li>
+</ul>
+<br/>
+<b>
+As mentioned above "app.Run()" is the termianal of middlewares and in the img here shown endpoint is the end of middleware. So what are there relationships?
+</b>
+<br/><br/>
+
+<p>If app.Run() is placed before app.UseEndpoints(), MVC or Razor Pages endpoints will not execute. If placed after, it will only be hit if no endpoint matches the route.</p>
+<p>Since app.UseEndpoints() is responsible for executing the endpoint of your application (the actual logic that serves the request), app.Run() typically does not need to be used for handling requests in most standard cases, because MVC and Razor Pages handle requests fully.</p>
+<b>
+When to use app.Run() ?
+</b>
+
+<ul>
+<li>short-circuits</li>
+<li>simple app that no need for full MVC framework endpoint</li>
+</ul>
+<br/>
+
+<p>example :</p>
+<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> builder = WebApplication.CreateBuilder(args);</span><br><span class="line"><span class="keyword">var</span> app = builder.Build();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 1. 首先配置異常處理中間件</span></span><br><span class="line"></span><br><span class="line">app.UseExceptionHandler(<span class="string">&quot;/error&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 3. 第一個中間件</span></span><br><span class="line">app.Use(<span class="keyword">async</span> (context, next) =&gt;</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> currentPath = context.Request.Path;</span><br><span class="line">    Console.WriteLine(<span class="string">$&quot;中間件 1 - 進入 [<span class="subst">&#123;currentPath&#125;</span>]&quot;</span>);</span><br><span class="line">    <span class="keyword">await</span> next();</span><br><span class="line">    Console.WriteLine(<span class="string">$&quot;中間件 1 - 返回 [<span class="subst">&#123;currentPath&#125;</span>]&quot;</span>);</span><br><span class="line"></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 4. 第二個中間件（拋出異常的中間件）</span></span><br><span class="line">app.Use(<span class="keyword">async</span> (context, next) =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">var</span> currentPath = context.Request.Path;</span><br><span class="line">    Console.WriteLine(<span class="string">$&quot;中間件 2 - 進入 [<span class="subst">&#123;currentPath&#125;</span>]&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 先調用 next()</span></span><br><span class="line">    <span class="keyword">await</span> next();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 確保在拋出異常之前沒有寫入響應</span></span><br><span class="line">    <span class="keyword">if</span> (currentPath == <span class="string">&quot;/&quot;</span> &amp;&amp; !context.Response.HasStarted)</span><br><span class="line">    &#123;</span><br><span class="line">        Console.WriteLine(<span class="string">&quot;中間件 2 - 即將拋出異常&quot;</span>);</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> Exception(<span class="string">&quot;中間件 2 返回時拋出異常&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Console.WriteLine(<span class="string">$&quot;中間件 2 - 返回 [<span class="subst">&#123;currentPath&#125;</span>]&quot;</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 5. 首頁路由</span></span><br><span class="line">app.MapGet(<span class="string">&quot;/&quot;</span>, () =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    Console.WriteLine(<span class="string">&quot;處理首頁請求 [/]&quot;</span>);</span><br><span class="line">    <span class="comment">//return Results.Text(&quot;Hello World!&quot;, &quot;text/plain&quot;);</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 6. 錯誤處理路由</span></span><br><span class="line">app.Map(<span class="string">&quot;/error&quot;</span>, <span class="keyword">async</span> context =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    Console.WriteLine(<span class="string">&quot;進入錯誤處理頁面 [/error]&quot;</span>);</span><br><span class="line">    <span class="keyword">var</span> exceptionFeature =</span><br><span class="line">        context.Features.Get&lt;Microsoft.AspNetCore.Diagnostics.IExceptionHandlerPathFeature&gt;();</span><br><span class="line">    <span class="keyword">var</span> error = exceptionFeature?.Error;</span><br><span class="line">    <span class="keyword">var</span> originalPath = exceptionFeature?.Path;</span><br><span class="line"></span><br><span class="line">    Console.WriteLine(<span class="string">$&quot;原始請求路徑: <span class="subst">&#123;originalPath&#125;</span>&quot;</span>);</span><br><span class="line">    Console.WriteLine(<span class="string">$&quot;捕捉到的錯誤: <span class="subst">&#123;error?.Message&#125;</span>&quot;</span>);</span><br><span class="line"></span><br><span class="line">    context.Response.ContentType = <span class="string">&quot;text/plain&quot;</span>;</span><br><span class="line">    <span class="keyword">await</span> context.Response.WriteAsync(</span><br><span class="line">        <span class="string">$&quot;錯誤已被處理！\n&quot;</span> +</span><br><span class="line">        <span class="string">$&quot;原始請求: <span class="subst">&#123;originalPath&#125;</span>\n&quot;</span> +</span><br><span class="line">        <span class="string">$&quot;錯誤信息: <span class="subst">&#123;error?.Message&#125;</span>&quot;</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">app.Run();</span><br></pre></td></tr></table></figure></div>
+
+<p>result :</p>
+<div class="code-container" data-rel="Txt"><figure class="iseeu highlight txt"><table><tr><td class="code"><pre><span class="line">request: &quot;/&quot;</span><br><span class="line">1. 中間件 1 - 進入 [/]</span><br><span class="line">2. 中間件 2 - 進入 [/]</span><br><span class="line">3. 處理首頁請求 [/]</span><br><span class="line">4. 中間件 2 - 即將拋出異常</span><br><span class="line">5. 觸發 app.UseExceptionHandler(&quot;/error&quot;);</span><br><span class="line"></span><br><span class="line">request: &quot;/error&quot;</span><br><span class="line">1. 中間件 1 - 進入 [/error]</span><br><span class="line">2. 中間件 2 - 進入 [/error]</span><br><span class="line">3. 進入錯誤處理頁面 [/error]</span><br><span class="line">   原始請求路徑: /</span><br><span class="line">   捕捉到的錯誤 中間件 2 - 即將拋出異常</span><br><span class="line">4. 中間件 2 - 返回 [/error]</span><br><span class="line">5. 中間件 1 - 返回 [/error]</span><br></pre></td></tr></table></figure></div>
+
+<p>Don’t call next.Invoke during or after the response has been sent to the client.</p>
+<h2 id="MVC-Endpoint"><a href="#MVC-Endpoint" class="headerlink" title="MVC Endpoint"></a>MVC Endpoint</h2><p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/blog.github.io/2024/10/22/netCore-middleware/MVCEndpoint.png"
+                      alt="MVCEndpoint"
+                ></p>
+]]></content>
+      <categories>
+        <category>Backend</category>
+      </categories>
+      <tags>
+        <tag>.NET</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>React 渲染</title>
+    <url>/blog.github.io/2025/01/18/react-render/</url>
+    <content><![CDATA[<h2 id="渲染策略"><a href="#渲染策略" class="headerlink" title="渲染策略"></a>渲染策略</h2><p>網站頁面常見組成，以電商為例 :</p>
+<p>靜態頁面</p>
+<ul>
+<li>特性：內容固定，所有使用者與時間的請求結果均相同</li>
+<li>範例：企業經營理念、關於我們</li>
+</ul>
+<p>動態頁面</p>
+<ul>
+<li>特性：內容因使用者請求或最新狀態而不同</li>
+<li>範例：我的訂單、購買紀錄</li>
+</ul>
+<p>動態頁面可延遲刷新</p>
+<ul>
+<li>特性：內容動態更新，但允許每隔一段時間才刷新</li>
+<li>範例：熱門商品、暢銷商品頁</li>
+</ul>
+<br/>
+
+<table>
+<thead>
+<tr>
+<th>渲染策略</th>
+<th>渲染時機</th>
+<th>性能</th>
+<th>伺服器負載</th>
+<th>更新數據的能力</th>
+<th>適用場景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SSR (Server-Side Rendering)</td>
+<td>每次請求時伺服器渲染</td>
+<td>慢</td>
+<td>高</td>
+<td>即時更新</td>
+<td>我的訂單、購買紀錄</td>
+</tr>
+<tr>
+<td>SSG (Static Site Generation)</td>
+<td>建置時生成靜態 HTML</td>
+<td>快</td>
+<td>低</td>
+<td>無法即時更新</td>
+<td>企業經營理念、關於我們</td>
+</tr>
+<tr>
+<td>ISR (Incremental Static Regeneration)</td>
+<td>靜態生成 + 定時更新</td>
+<td>中</td>
+<td>中</td>
+<td>定時更新</td>
+<td>熱門、暢銷商品頁</td>
+</tr>
+</tbody></table>
+<br/>
+
+<h2 id="渲染機制"><a href="#渲染機制" class="headerlink" title="渲染機制"></a>渲染機制</h2><p>若以 SSR 為範例，使用者瀏覽頁面時 :</p>
+<p>首次渲染在伺服器端</p>
+<ol>
+<li>生成靜態 HTML 與 JavaScript 客戶端</li>
+<li>瀏覽器接收並顯示靜態 HTML</li>
+<li>加載並執行 JavaScript 文件</li>
+<li>生成 Virtual DOM，若包含互動事件則將靜態 HTML 轉換為可交互的 React 元素，綁定互動事件。(Hydration 階段)</li>
+<li>更新實際 DOM 節點，完成渲染</li>
+</ol>
+<br/>
+
+<p>更新渲染</p>
+<ol>
+<li>生成新的 Virtual DOM</li>
+<li>將新的 Virtual DOM 與舊的 Virtual DOM 進行比較，找出需要更新的部分 (Reconciliation 階段)</li>
+<li>更新實際 DOM 節點，完成渲染，完成畫面更新</li>
+</ol>
+<br/>
+]]></content>
+      <categories>
+        <category>Frontend</category>
+      </categories>
+      <tags>
+        <tag>React</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>React Server Component</title>
+    <url>/blog.github.io/2025/01/18/react-server-component/</url>
+    <content><![CDATA[<h2 id="什麼是-React-Server-Component？"><a href="#什麼是-React-Server-Component？" class="headerlink" title="什麼是 React Server Component？"></a>什麼是 React Server Component？</h2><h3 id="SSR-運作機制的瓶頸"><a href="#SSR-運作機制的瓶頸" class="headerlink" title="SSR 運作機制的瓶頸"></a>SSR 運作機制的瓶頸</h3><p>儘管 SSR 能夠迅速提供渲染好的 HTML，但也有其困境在：</p>
+<ul>
+<li>在開始渲染頁面之前，需等待頁面資料加載完成</li>
+<li>整頁 Hydration 階段完成前，客戶端不能與頁面互動</li>
+<li>整頁都需要 Hydrate 且需將 JavaScript 都載到客戶端才能進行</li>
+</ul>
+<br/>
+
+<p>頁面資料加載阻塞渲染的範例 ( 以下範例皆以 Next.Js 為主 )</p>
+<div class="code-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Home Page 頁面</span></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">Home</span> = (<span class="params">&#123; data &#125;</span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">ComponentA</span> <span class="attr">data</span>=<span class="string">&#123;data&#125;</span> /&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">ComponentB</span> /&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="title function_">getServerSideProps</span> = <span class="keyword">async</span> (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">  <span class="comment">// 只有 ComponentA 需要 data，ComponentB 也需要跟著等待</span></span><br><span class="line">  <span class="keyword">const</span> data = <span class="keyword">await</span> <span class="title function_">getComponentAData</span>();</span><br><span class="line">  <span class="keyword">return</span> &#123;<span class="attr">props</span>:&#123; data &#125;&#125;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></div>
+
+<br>
+
+<blockquote>
+<p><b>Hydration 階段</b><br>渲染產生的 HTML 是靜態的，若要具備互動性（例如：按鈕可按下並觸發事件）需要經過 Hydration 階段。<br>意思是載入 JavaScript 將 React 狀態與 DOM 的監聽事件綁定，才能具有互動性。</p>
+</blockquote>
+<br>
+
+<h3 id="Suspense-元件延遲渲染"><a href="#Suspense-元件延遲渲染" class="headerlink" title="Suspense 元件延遲渲染"></a>Suspense 元件延遲渲染</h3><p>為解決 SSR 整頁式渲染的運作機制，React 提出允許延遲渲染的 Suspense 元件，核心概念：</p>
+<ul>
+<li>伺服器優先渲染非 Suspense 區塊並分批發給客戶端，不必等待整頁一次性回覆(串流式渲染)</li>
+<li>動態調整渲染優先級，預設順序較後的元件若被客戶端按下後將提前渲染</li>
+</ul>
+<p>範例中 ComponentB 將優先回傳，ComponentA 則可以延遲渲染後回傳給客戶端 :</p>
+<div class="code-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Home Page 頁面</span></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">Home</span> = (<span class="params">&#123; data &#125;</span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">Suspense</span> <span class="attr">fallback</span>=<span class="string">&#123;</span>&lt;<span class="attr">div</span>&gt;</span>Loading Component A...<span class="tag">&lt;/<span class="name">div</span>&gt;</span>&#125;&gt;</span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;<span class="name">ComponentA</span> <span class="attr">data</span>=<span class="string">&#123;data&#125;</span> /&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;/<span class="name">Suspense</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">ComponentB</span> /&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="title function_">getServerSideProps</span> = <span class="keyword">async</span> (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> data = <span class="keyword">await</span> <span class="title function_">getComponentAData</span>();</span><br><span class="line">  <span class="keyword">return</span> &#123;<span class="attr">props</span>:&#123; data &#125;&#125;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></div>
+
+<br>
+
+<p>即便提出了延遲區塊渲染的優化方案，核心問題仍然存在。<br>因此，才有了今天的主角 React Server Component（or RSC)。</p>
+<h3 id="React-Server-Component-RSC"><a href="#React-Server-Component-RSC" class="headerlink" title="React Server Component ( RSC )"></a>React Server Component ( RSC )</h3><p>RSC 並不是為了取代 SSR 或 Suspense，而是改變了 SSR 的運作機制。<br/><br>一般來說，完整的應用程式除了 RSC 還會有 Client Component (or RCC)。</p>
+<h4 id="RSC-特點"><a href="#RSC-特點" class="headerlink" title="RSC 特點"></a>RSC 特點</h4><ul>
+<li>將 加載資料 與 渲染 在伺服器端以「元件」為單位處理</li>
+<li>串流方式回傳給客戶端</li>
+<li>減少伺服器需打包並傳輸給客戶端的 JavaScript</li>
+</ul>
+<br/>
+
+<p>RSC 有別於 SSR，伺服器接受到頁面請求後是以「元件」為單位驅動處理的，所以不會有頁面下 A 元件需要 A 資料，B 元件不需要卻得等 A 資料加載完成才能渲染的問題。RSC 得以讓 A 元件取 A 資料，B 元件同時渲染自己的內容，兩者平行處理。</p>
+<p>頁面下中的 RSC 與 RCC，不必等待全數渲染完成才回傳，優先完成的部分將分批回傳給客戶端，讓初次載入速度更快使用者體驗更佳，且串流式渲染的 SEO 在現代瀏覽器中能夠被爬蟲識別。</p>
+<p>由於 RSC 在伺服器就渲染成靜態 HTML，本身又不包含客戶端操作邏輯，因此相比 SSR 要打包交給客戶端處理的 JavaScript 減少了且 RSC 不必 Hydrate。</p>
+<h4 id="RCC-特點"><a href="#RCC-特點" class="headerlink" title="RCC 特點"></a>RCC 特點</h4><ul>
+<li>處理客戶端操作邏輯</li>
+<li>客戶端包含 Hydration 階段</li>
+</ul>
+<p>RCC 主要處理客戶端的操作邏輯，運作方式如同 SSR，伺服器渲染後的結果包含: HTML、JavaScript，再交客戶端 Hydrate。</p>
+<p>以 RSC 與 RCC 組成頁面</p>
+<div class="code-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// ComponentA.js = React Server Component (RSC)</span></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">ComponentA</span> = <span class="keyword">async</span> (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> data = <span class="keyword">await</span> <span class="title function_">fetchComponentAData</span>();</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">h2</span>&gt;</span>Component A<span class="tag">&lt;/<span class="name">h2</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;data&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ComponentB.js = React Client Component (RCC)</span></span><br><span class="line"><span class="string">&quot;use client&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">ComponentB</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> [count, setCount] = <span class="title function_">useState</span>(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> <span class="title function_">handleClick</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">    <span class="title function_">setCount</span>(count + <span class="number">1</span>);</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">button</span> <span class="attr">onClick</span>=<span class="string">&#123;handleClick&#125;</span>&gt;</span>Click me<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">p</span>&gt;</span>Button clicked &#123;count&#125; times<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Home Page 頁面</span></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">Page</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">ComponentA</span> /&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">ComponentB</span> /&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></div>
+
+<br/>
+
+<p>假如 ComponentA 加載資料(fetchComponentAData)過程很慢，ComponentB 也能先渲染並回傳給客戶端進行 Hydrate，於此同時， ComponentA 繼續直到完成後再回傳。</p>
+<h4 id="RSC-RCC-下-Suspense-的職責"><a href="#RSC-RCC-下-Suspense-的職責" class="headerlink" title="RSC&#x2F;RCC 下 Suspense 的職責"></a>RSC&#x2F;RCC 下 Suspense 的職責</h4><ul>
+<li>SSR: Suspense 是實現串流渲染的必要元件，配置才能延遲渲染。</li>
+<li>RSC&#x2F;RCC: 元件本身已支持串流渲染，因此 Suspense 職責著重在為慢速、次要元件準備 fallback UI。</li>
+</ul>
+<h4 id="運作流程"><a href="#運作流程" class="headerlink" title="運作流程"></a>運作流程</h4><div class="code-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title function_">Page</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">var</span> pageData = <span class="keyword">await</span> <span class="title function_">getPageData</span>();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">h1</span>&gt;</span>&#123;pageData.title&#125;<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span></span><br><span class="line"><span class="language-xml"></span></span><br><span class="line"><span class="language-xml">      &#123;/* RSC */&#125;</span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">Suspense</span> <span class="attr">fallback</span>=<span class="string">&#123;</span>&lt;<span class="attr">Loading</span> /&gt;</span>&#125;&gt;</span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;<span class="name">ServerComponent</span> /&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;/<span class="name">Suspense</span>&gt;</span></span></span><br><span class="line"><span class="language-xml"></span></span><br><span class="line"><span class="language-xml">       &#123;/* RCC */&#125;</span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">ClientComponentB</span> /&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></div>
+
+<p>再次強調，SSR 指的是伺服器端的渲染，而 RSC 的出現改善了 SSR 的運作機制，並不是取代 SSR.</p>
+<p>說明</p>
+<ol>
+<li>Page 為頁面層級的元件，因此需等待 pageData 後才能接續渲染</li>
+<li>併行渲染 Page 內部的內容，若 RSC&#x2F;RCC 包含加載資料則分別處理</li>
+<li>h1、Suspense 先回傳給客戶端頁面</li>
+<li>同時 ServerComponent、ClientComponentB 繼續渲染直到完成再給客戶端</li>
+<li>僅 ClientComponentB 在客戶端需要 Hydrate</li>
+<li>完成頁面渲染</li>
+</ol>
+]]></content>
+      <categories>
+        <category>Frontend</category>
+      </categories>
+      <tags>
+        <tag>React</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>.NET 中如何平行發送 API</title>
+    <url>/blog.github.io/2024/11/06/taskAll/</url>
+    <content><![CDATA[<h2 id="情境"><a href="#情境" class="headerlink" title="情境"></a>情境</h2><p>假如有一個系統需要客戶的服務歷程，則資料可能由以下來源組成，並由 1 支 api 封裝彙整好的資訊。</p>
+<ul>
+<li>A: 客戶基本資料</li>
+<li>B: 服務紀錄明細</li>
+<li>C: 服務業務資訊</li>
+</ul>
+<p>比起取得 A 後等待回應再取 B 再等待回應取 C，採平行方式一次取 Ａ、Ｂ、Ｃ 並等待一次回應更省時。</p>
+<p>逐一取得資料需要一個等一個</p>
+<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> A = <span class="keyword">await</span> <span class="keyword">this</span>._aprService.GetAsync(<span class="string">&quot;/customers&quot;</span>);</span><br><span class="line"><span class="keyword">var</span> B = <span class="keyword">await</span> <span class="keyword">this</span>._aprService.GetAsync(<span class="string">&quot;/servedRecords&quot;</span>);</span><br><span class="line"><span class="keyword">var</span> C = <span class="keyword">await</span> <span class="keyword">this</span>._aprService.GetAsync(<span class="string">&quot;/sales&quot;</span>);</span><br></pre></td></tr></table></figure></div>
+
+<br/>
+
+<p>上述情境下，.NET 提供 Task.WhenAll( ) 來支援平行發送 Task ( 請求 &#x2F; 任務 )</p>
+<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> task1 = Task.FromResult(<span class="number">1</span>);</span><br><span class="line"><span class="keyword">var</span> task2 = Task.FromResult(<span class="number">2</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">int</span>[]? results = <span class="keyword">await</span> Task.WhenAll(task1, task2);</span><br></pre></td></tr></table></figure></div>
+
+<p>實際應用中，Tasks 回傳的結果通常型別不同，可使用 tuple assignment 取得結果</p>
+<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> apiA = <span class="keyword">this</span>._apiService.GetAsync&lt;ObjInfo&gt;(<span class="string">&quot;/api/Object&quot;</span>);</span><br><span class="line"><span class="keyword">var</span> apiB = <span class="keyword">this</span>._apiService.GetAsync&lt;CustomerInfo&gt;(<span class="string">&quot;/api/CustomerInfo&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// results 無法判斷型別因此會錯誤</span></span><br><span class="line"><span class="comment">// var results = await Task.WhenAll(apiA, apiB);</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">await</span> Task.WhenAll(apiA, apiB);</span><br><span class="line"><span class="keyword">var</span> (apiAResult,apiBResult) = (<span class="keyword">await</span> apiA,<span class="keyword">await</span> apiB);</span><br></pre></td></tr></table></figure></div>
+
+<p>除了常見的 WhenAll，.NET 另外提供了 WaitAll 方法。</p>
+<br/>
+
+<h2 id="Task-WhenAll-Task-WaitAll-差異在哪"><a href="#Task-WhenAll-Task-WaitAll-差異在哪" class="headerlink" title="Task.WhenAll( ) &#x2F; Task.WaitAll( ) 差異在哪 ?"></a>Task.WhenAll( ) &#x2F; Task.WaitAll( ) 差異在哪 ?</h2><p>WhenAll：</p>
+<ul>
+<li>非同步方法，不會阻塞執行緒，適合異步程式設計</li>
+</ul>
+<p>WaitAll：</p>
+<ul>
+<li>同步方法，會阻塞執行緒，適合同步執行的場景</li>
+</ul>
+<br/>
+其實兩者的回傳結果也不同，不過，都可藉由 tuple assignment 取得資料。
+
+<br/>
+
+<p>Tasks 回傳結果:</p>
+<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> apiA = <span class="keyword">this</span>._apiService.GetAsync&lt;ObjInfo&gt;(<span class="string">&quot;/api/Object&quot;</span>);</span><br><span class="line"><span class="keyword">var</span> apiB = <span class="keyword">this</span>._apiService.GetAsync&lt;CustomerInfo&gt;(<span class="string">&quot;/api/CustomerInfo&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> resultA = Task.WhenAll(apiA, apiB);</span><br><span class="line"><span class="comment">// 回傳型別: Task?</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> resultB =  <span class="keyword">await</span> Task.WhenAll(apiA, apiB);</span><br><span class="line"><span class="comment">// 回傳型別: 錯誤因為 apiA,apiB 結果不同</span></span><br><span class="line"></span><br><span class="line">Task.WaitAll(apiA, apiB);</span><br><span class="line"><span class="comment">// 回傳型別: void</span></span><br></pre></td></tr></table></figure></div>
+
+<p>都可取出 Task 各自回傳的結果:</p>
+<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"> <span class="keyword">var</span> apiA = <span class="keyword">this</span>._apiService.GetAsync&lt;ObjInfo&gt;(<span class="string">&quot;/api/Object&quot;</span>);</span><br><span class="line"> <span class="keyword">var</span> apiB = <span class="keyword">this</span>._apiService.GetAsync&lt;CustomerInfo&gt;(<span class="string">&quot;/api/CustomerInfo&quot;</span>);</span><br><span class="line"></span><br><span class="line"> <span class="keyword">await</span> Task.WhenAll(apiA, apiB);</span><br><span class="line"></span><br><span class="line"> <span class="comment">// or</span></span><br><span class="line"></span><br><span class="line"> <span class="comment">//  Task.WaitAll(apiA, apiB);</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> (apiAResult,apiBResult) = (<span class="keyword">await</span> apiA,<span class="keyword">await</span> apiB);</span><br></pre></td></tr></table></figure></div>
+
+<br/>
+
+<h2 id="錯誤處理"><a href="#錯誤處理" class="headerlink" title="錯誤處理"></a>錯誤處理</h2><p>當 Tasks 發生錯誤時，回傳時機分為</p>
+<ol>
+<li>全部處理完成後回覆</li>
+<li>只要有 1 個錯誤發生立即回覆</li>
+</ol>
+<br/>
+
+<p>全部處理完成後回覆 :</p>
+<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">try</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">var</span> task1 = Task.Run(() =&gt; <span class="keyword">throw</span> <span class="keyword">new</span> InvalidOperationException(<span class="string">&quot;Task 1 failed&quot;</span>));</span><br><span class="line">    <span class="keyword">var</span> task2 = Task.Run(() =&gt; <span class="keyword">throw</span> <span class="keyword">new</span> ArgumentException(<span class="string">&quot;Task 2 failed&quot;</span>));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// var allTasks = Task.WhenAll(task1, task2);</span></span><br><span class="line">    <span class="comment">// allTasks.Wait()</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// or</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Task.WaitAll(task1, task2);</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">catch</span> (AggregateException ex)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 錯誤集合可以捕捉所有 Task 錯誤</span></span><br><span class="line">    <span class="keyword">foreach</span> (<span class="keyword">var</span> innerException <span class="keyword">in</span> ex.InnerExceptions)</span><br><span class="line">    &#123;</span><br><span class="line">        Console.WriteLine(<span class="string">$&quot;Exception: <span class="subst">&#123;innerException.Message&#125;</span>&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>只要有 1 個錯誤發生立即回覆，因此只能抓到 1 個錯誤 :</p>
+<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">try</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">var</span> task1 = Task.Run(() =&gt; <span class="keyword">throw</span> <span class="keyword">new</span> InvalidOperationException(<span class="string">&quot;Task 1 failed&quot;</span>));</span><br><span class="line">    <span class="keyword">var</span> task2 = Task.Run(() =&gt; <span class="keyword">throw</span> <span class="keyword">new</span> ArgumentException(<span class="string">&quot;Task 2 failed&quot;</span>));</span><br><span class="line"></span><br><span class="line">    <span class="keyword">await</span> Task.WhenAll(task1, task2);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">catch</span> (Exception ex)</span><br><span class="line">&#123;</span><br><span class="line">     Console.WriteLine(<span class="string">$&quot;捕獲到異常: <span class="subst">&#123;ex.Message&#125;</span>&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li>WhenAll :<ul>
+<li>全部處理完成後回覆</li>
+<li>( 搭配使用 await ) 只要有 1 個錯誤發生立則即回覆</li>
+</ul>
+</li>
+<li>WaitAll : 全部處理完成後回覆<ul>
+<li>全部處理完成後回覆</li>
+</ul>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Backend</category>
+      </categories>
+      <tags>
+        <tag>.NET</tag>
+      </tags>
+  </entry>
+</search>
