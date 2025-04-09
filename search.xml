@@ -362,6 +362,83 @@ When to use app.Run() ?
       </tags>
   </entry>
   <entry>
+    <title>.NET 中如何平行發送 API</title>
+    <url>/blog.github.io/2024/11/06/taskAll/</url>
+    <content><![CDATA[<h2 id="情境"><a href="#情境" class="headerlink" title="情境"></a>情境</h2><p>假如有一個系統需要客戶的服務歷程，則資料可能由以下來源組成，並由 1 支 api 封裝彙整好的資訊。</p>
+<ul>
+<li>A: 客戶基本資料</li>
+<li>B: 服務紀錄明細</li>
+<li>C: 服務業務資訊</li>
+</ul>
+<p>比起取得 A 後等待回應再取 B 再等待回應取 C，採平行方式一次取 Ａ、Ｂ、Ｃ 並等待一次回應更省時。</p>
+<p>逐一取得資料需要一個等一個</p>
+<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> A = <span class="keyword">await</span> <span class="keyword">this</span>._aprService.GetAsync(<span class="string">&quot;/customers&quot;</span>);</span><br><span class="line"><span class="keyword">var</span> B = <span class="keyword">await</span> <span class="keyword">this</span>._aprService.GetAsync(<span class="string">&quot;/servedRecords&quot;</span>);</span><br><span class="line"><span class="keyword">var</span> C = <span class="keyword">await</span> <span class="keyword">this</span>._aprService.GetAsync(<span class="string">&quot;/sales&quot;</span>);</span><br></pre></td></tr></table></figure></div>
+
+<br/>
+
+<p>上述情境下，.NET 提供 Task.WhenAll( ) 來支援平行發送 Task ( 請求 &#x2F; 任務 )</p>
+<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> task1 = Task.FromResult(<span class="number">1</span>);</span><br><span class="line"><span class="keyword">var</span> task2 = Task.FromResult(<span class="number">2</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">int</span>[]? results = <span class="keyword">await</span> Task.WhenAll(task1, task2);</span><br></pre></td></tr></table></figure></div>
+
+<p>實際應用中，Tasks 回傳的結果通常型別不同，可使用 tuple assignment 取得結果</p>
+<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> apiA = <span class="keyword">this</span>._apiService.GetAsync&lt;ObjInfo&gt;(<span class="string">&quot;/api/Object&quot;</span>);</span><br><span class="line"><span class="keyword">var</span> apiB = <span class="keyword">this</span>._apiService.GetAsync&lt;CustomerInfo&gt;(<span class="string">&quot;/api/CustomerInfo&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// results 無法判斷型別因此會錯誤</span></span><br><span class="line"><span class="comment">// var results = await Task.WhenAll(apiA, apiB);</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">await</span> Task.WhenAll(apiA, apiB);</span><br><span class="line"><span class="keyword">var</span> (apiAResult,apiBResult) = (<span class="keyword">await</span> apiA,<span class="keyword">await</span> apiB);</span><br></pre></td></tr></table></figure></div>
+
+<p>除了常見的 WhenAll，.NET 另外提供了 WaitAll 方法。</p>
+<br/>
+
+<h2 id="Task-WhenAll-Task-WaitAll-差異在哪"><a href="#Task-WhenAll-Task-WaitAll-差異在哪" class="headerlink" title="Task.WhenAll( ) &#x2F; Task.WaitAll( ) 差異在哪 ?"></a>Task.WhenAll( ) &#x2F; Task.WaitAll( ) 差異在哪 ?</h2><p>WhenAll：</p>
+<ul>
+<li>非同步方法，不會阻塞執行緒，適合異步程式設計</li>
+</ul>
+<p>WaitAll：</p>
+<ul>
+<li>同步方法，會阻塞執行緒，適合同步執行的場景</li>
+</ul>
+<br/>
+其實兩者的回傳結果也不同，不過，都可藉由 tuple assignment 取得資料。
+
+<br/>
+
+<p>Tasks 回傳結果:</p>
+<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> apiA = <span class="keyword">this</span>._apiService.GetAsync&lt;ObjInfo&gt;(<span class="string">&quot;/api/Object&quot;</span>);</span><br><span class="line"><span class="keyword">var</span> apiB = <span class="keyword">this</span>._apiService.GetAsync&lt;CustomerInfo&gt;(<span class="string">&quot;/api/CustomerInfo&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> resultA = Task.WhenAll(apiA, apiB);</span><br><span class="line"><span class="comment">// 回傳型別: Task?</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> resultB =  <span class="keyword">await</span> Task.WhenAll(apiA, apiB);</span><br><span class="line"><span class="comment">// 回傳型別: 錯誤因為 apiA,apiB 結果不同</span></span><br><span class="line"></span><br><span class="line">Task.WaitAll(apiA, apiB);</span><br><span class="line"><span class="comment">// 回傳型別: void</span></span><br></pre></td></tr></table></figure></div>
+
+<p>都可取出 Task 各自回傳的結果:</p>
+<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"> <span class="keyword">var</span> apiA = <span class="keyword">this</span>._apiService.GetAsync&lt;ObjInfo&gt;(<span class="string">&quot;/api/Object&quot;</span>);</span><br><span class="line"> <span class="keyword">var</span> apiB = <span class="keyword">this</span>._apiService.GetAsync&lt;CustomerInfo&gt;(<span class="string">&quot;/api/CustomerInfo&quot;</span>);</span><br><span class="line"></span><br><span class="line"> <span class="keyword">await</span> Task.WhenAll(apiA, apiB);</span><br><span class="line"></span><br><span class="line"> <span class="comment">// or</span></span><br><span class="line"></span><br><span class="line"> <span class="comment">//  Task.WaitAll(apiA, apiB);</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> (apiAResult,apiBResult) = (<span class="keyword">await</span> apiA,<span class="keyword">await</span> apiB);</span><br></pre></td></tr></table></figure></div>
+
+<br/>
+
+<h2 id="錯誤處理"><a href="#錯誤處理" class="headerlink" title="錯誤處理"></a>錯誤處理</h2><p>當 Tasks 發生錯誤時，回傳時機分為</p>
+<ol>
+<li>全部處理完成後回覆</li>
+<li>只要有 1 個錯誤發生立即回覆</li>
+</ol>
+<br/>
+
+<p>全部處理完成後回覆 :</p>
+<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">try</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">var</span> task1 = Task.Run(() =&gt; <span class="keyword">throw</span> <span class="keyword">new</span> InvalidOperationException(<span class="string">&quot;Task 1 failed&quot;</span>));</span><br><span class="line">    <span class="keyword">var</span> task2 = Task.Run(() =&gt; <span class="keyword">throw</span> <span class="keyword">new</span> ArgumentException(<span class="string">&quot;Task 2 failed&quot;</span>));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// var allTasks = Task.WhenAll(task1, task2);</span></span><br><span class="line">    <span class="comment">// allTasks.Wait()</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// or</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Task.WaitAll(task1, task2);</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">catch</span> (AggregateException ex)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 錯誤集合可以捕捉所有 Task 錯誤</span></span><br><span class="line">    <span class="keyword">foreach</span> (<span class="keyword">var</span> innerException <span class="keyword">in</span> ex.InnerExceptions)</span><br><span class="line">    &#123;</span><br><span class="line">        Console.WriteLine(<span class="string">$&quot;Exception: <span class="subst">&#123;innerException.Message&#125;</span>&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>只要有 1 個錯誤發生立即回覆，因此只能抓到 1 個錯誤 :</p>
+<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">try</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">var</span> task1 = Task.Run(() =&gt; <span class="keyword">throw</span> <span class="keyword">new</span> InvalidOperationException(<span class="string">&quot;Task 1 failed&quot;</span>));</span><br><span class="line">    <span class="keyword">var</span> task2 = Task.Run(() =&gt; <span class="keyword">throw</span> <span class="keyword">new</span> ArgumentException(<span class="string">&quot;Task 2 failed&quot;</span>));</span><br><span class="line"></span><br><span class="line">    <span class="keyword">await</span> Task.WhenAll(task1, task2);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">catch</span> (Exception ex)</span><br><span class="line">&#123;</span><br><span class="line">     Console.WriteLine(<span class="string">$&quot;捕獲到異常: <span class="subst">&#123;ex.Message&#125;</span>&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li>WhenAll :<ul>
+<li>全部處理完成後回覆</li>
+<li>( 搭配使用 await ) 只要有 1 個錯誤發生立則即回覆</li>
+</ul>
+</li>
+<li>WaitAll : 全部處理完成後回覆<ul>
+<li>全部處理完成後回覆</li>
+</ul>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Backend</category>
+      </categories>
+      <tags>
+        <tag>.NET</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>React Server Component</title>
     <url>/blog.github.io/2025/01/18/react-server-component/</url>
     <content><![CDATA[<h2 id="什麼是-React-Server-Component？"><a href="#什麼是-React-Server-Component？" class="headerlink" title="什麼是 React Server Component？"></a>什麼是 React Server Component？</h2><h3 id="SSR-運作機制的瓶頸"><a href="#SSR-運作機制的瓶頸" class="headerlink" title="SSR 運作機制的瓶頸"></a>SSR 運作機制的瓶頸</h3><p>儘管 SSR 能夠迅速提供渲染好的 HTML，但也有其困境在：</p>
@@ -437,83 +514,6 @@ When to use app.Run() ?
       </categories>
       <tags>
         <tag>React</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>.NET 中如何平行發送 API</title>
-    <url>/blog.github.io/2024/11/06/taskAll/</url>
-    <content><![CDATA[<h2 id="情境"><a href="#情境" class="headerlink" title="情境"></a>情境</h2><p>假如有一個系統需要客戶的服務歷程，則資料可能由以下來源組成，並由 1 支 api 封裝彙整好的資訊。</p>
-<ul>
-<li>A: 客戶基本資料</li>
-<li>B: 服務紀錄明細</li>
-<li>C: 服務業務資訊</li>
-</ul>
-<p>比起取得 A 後等待回應再取 B 再等待回應取 C，採平行方式一次取 Ａ、Ｂ、Ｃ 並等待一次回應更省時。</p>
-<p>逐一取得資料需要一個等一個</p>
-<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> A = <span class="keyword">await</span> <span class="keyword">this</span>._aprService.GetAsync(<span class="string">&quot;/customers&quot;</span>);</span><br><span class="line"><span class="keyword">var</span> B = <span class="keyword">await</span> <span class="keyword">this</span>._aprService.GetAsync(<span class="string">&quot;/servedRecords&quot;</span>);</span><br><span class="line"><span class="keyword">var</span> C = <span class="keyword">await</span> <span class="keyword">this</span>._aprService.GetAsync(<span class="string">&quot;/sales&quot;</span>);</span><br></pre></td></tr></table></figure></div>
-
-<br/>
-
-<p>上述情境下，.NET 提供 Task.WhenAll( ) 來支援平行發送 Task ( 請求 &#x2F; 任務 )</p>
-<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> task1 = Task.FromResult(<span class="number">1</span>);</span><br><span class="line"><span class="keyword">var</span> task2 = Task.FromResult(<span class="number">2</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">int</span>[]? results = <span class="keyword">await</span> Task.WhenAll(task1, task2);</span><br></pre></td></tr></table></figure></div>
-
-<p>實際應用中，Tasks 回傳的結果通常型別不同，可使用 tuple assignment 取得結果</p>
-<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> apiA = <span class="keyword">this</span>._apiService.GetAsync&lt;ObjInfo&gt;(<span class="string">&quot;/api/Object&quot;</span>);</span><br><span class="line"><span class="keyword">var</span> apiB = <span class="keyword">this</span>._apiService.GetAsync&lt;CustomerInfo&gt;(<span class="string">&quot;/api/CustomerInfo&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// results 無法判斷型別因此會錯誤</span></span><br><span class="line"><span class="comment">// var results = await Task.WhenAll(apiA, apiB);</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">await</span> Task.WhenAll(apiA, apiB);</span><br><span class="line"><span class="keyword">var</span> (apiAResult,apiBResult) = (<span class="keyword">await</span> apiA,<span class="keyword">await</span> apiB);</span><br></pre></td></tr></table></figure></div>
-
-<p>除了常見的 WhenAll，.NET 另外提供了 WaitAll 方法。</p>
-<br/>
-
-<h2 id="Task-WhenAll-Task-WaitAll-差異在哪"><a href="#Task-WhenAll-Task-WaitAll-差異在哪" class="headerlink" title="Task.WhenAll( ) &#x2F; Task.WaitAll( ) 差異在哪 ?"></a>Task.WhenAll( ) &#x2F; Task.WaitAll( ) 差異在哪 ?</h2><p>WhenAll：</p>
-<ul>
-<li>非同步方法，不會阻塞執行緒，適合異步程式設計</li>
-</ul>
-<p>WaitAll：</p>
-<ul>
-<li>同步方法，會阻塞執行緒，適合同步執行的場景</li>
-</ul>
-<br/>
-其實兩者的回傳結果也不同，不過，都可藉由 tuple assignment 取得資料。
-
-<br/>
-
-<p>Tasks 回傳結果:</p>
-<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> apiA = <span class="keyword">this</span>._apiService.GetAsync&lt;ObjInfo&gt;(<span class="string">&quot;/api/Object&quot;</span>);</span><br><span class="line"><span class="keyword">var</span> apiB = <span class="keyword">this</span>._apiService.GetAsync&lt;CustomerInfo&gt;(<span class="string">&quot;/api/CustomerInfo&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> resultA = Task.WhenAll(apiA, apiB);</span><br><span class="line"><span class="comment">// 回傳型別: Task?</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> resultB =  <span class="keyword">await</span> Task.WhenAll(apiA, apiB);</span><br><span class="line"><span class="comment">// 回傳型別: 錯誤因為 apiA,apiB 結果不同</span></span><br><span class="line"></span><br><span class="line">Task.WaitAll(apiA, apiB);</span><br><span class="line"><span class="comment">// 回傳型別: void</span></span><br></pre></td></tr></table></figure></div>
-
-<p>都可取出 Task 各自回傳的結果:</p>
-<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"> <span class="keyword">var</span> apiA = <span class="keyword">this</span>._apiService.GetAsync&lt;ObjInfo&gt;(<span class="string">&quot;/api/Object&quot;</span>);</span><br><span class="line"> <span class="keyword">var</span> apiB = <span class="keyword">this</span>._apiService.GetAsync&lt;CustomerInfo&gt;(<span class="string">&quot;/api/CustomerInfo&quot;</span>);</span><br><span class="line"></span><br><span class="line"> <span class="keyword">await</span> Task.WhenAll(apiA, apiB);</span><br><span class="line"></span><br><span class="line"> <span class="comment">// or</span></span><br><span class="line"></span><br><span class="line"> <span class="comment">//  Task.WaitAll(apiA, apiB);</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> (apiAResult,apiBResult) = (<span class="keyword">await</span> apiA,<span class="keyword">await</span> apiB);</span><br></pre></td></tr></table></figure></div>
-
-<br/>
-
-<h2 id="錯誤處理"><a href="#錯誤處理" class="headerlink" title="錯誤處理"></a>錯誤處理</h2><p>當 Tasks 發生錯誤時，回傳時機分為</p>
-<ol>
-<li>全部處理完成後回覆</li>
-<li>只要有 1 個錯誤發生立即回覆</li>
-</ol>
-<br/>
-
-<p>全部處理完成後回覆 :</p>
-<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">try</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">var</span> task1 = Task.Run(() =&gt; <span class="keyword">throw</span> <span class="keyword">new</span> InvalidOperationException(<span class="string">&quot;Task 1 failed&quot;</span>));</span><br><span class="line">    <span class="keyword">var</span> task2 = Task.Run(() =&gt; <span class="keyword">throw</span> <span class="keyword">new</span> ArgumentException(<span class="string">&quot;Task 2 failed&quot;</span>));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// var allTasks = Task.WhenAll(task1, task2);</span></span><br><span class="line">    <span class="comment">// allTasks.Wait()</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// or</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Task.WaitAll(task1, task2);</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">catch</span> (AggregateException ex)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 錯誤集合可以捕捉所有 Task 錯誤</span></span><br><span class="line">    <span class="keyword">foreach</span> (<span class="keyword">var</span> innerException <span class="keyword">in</span> ex.InnerExceptions)</span><br><span class="line">    &#123;</span><br><span class="line">        Console.WriteLine(<span class="string">$&quot;Exception: <span class="subst">&#123;innerException.Message&#125;</span>&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
-
-<p>只要有 1 個錯誤發生立即回覆，因此只能抓到 1 個錯誤 :</p>
-<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">try</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">var</span> task1 = Task.Run(() =&gt; <span class="keyword">throw</span> <span class="keyword">new</span> InvalidOperationException(<span class="string">&quot;Task 1 failed&quot;</span>));</span><br><span class="line">    <span class="keyword">var</span> task2 = Task.Run(() =&gt; <span class="keyword">throw</span> <span class="keyword">new</span> ArgumentException(<span class="string">&quot;Task 2 failed&quot;</span>));</span><br><span class="line"></span><br><span class="line">    <span class="keyword">await</span> Task.WhenAll(task1, task2);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">catch</span> (Exception ex)</span><br><span class="line">&#123;</span><br><span class="line">     Console.WriteLine(<span class="string">$&quot;捕獲到異常: <span class="subst">&#123;ex.Message&#125;</span>&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
-
-<ul>
-<li>WhenAll :<ul>
-<li>全部處理完成後回覆</li>
-<li>( 搭配使用 await ) 只要有 1 個錯誤發生立則即回覆</li>
-</ul>
-</li>
-<li>WaitAll : 全部處理完成後回覆<ul>
-<li>全部處理完成後回覆</li>
-</ul>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>Backend</category>
-      </categories>
-      <tags>
-        <tag>.NET</tag>
       </tags>
   </entry>
 </search>
