@@ -13,7 +13,7 @@
     
     <!--- Seo Part-->
     
-    <link rel="canonical" href="https://tom00qq.github.io/blog.github.io/2025/01/18/react-server-component/"/>
+    <link rel="canonical" href="https://tom00qq.github.io/blog.github.io/2025/05/19/javascript-review/"/>
     <meta name="robots" content="index,follow">
     <meta name="googlebot" content="index,follow">
     <meta name="revisit-after" content="1 days">
@@ -21,17 +21,17 @@
     
     
         
-        <meta name="description" content="什麼是 React Server Component？SSR 運作機制的瓶頸儘管 SSR 能夠迅速提供渲染好的 HTML，但也有其困境在：  在開始渲染頁面之前，需等待頁面資料加載完成 整頁 Hydration 階段完成前，客戶端不能與頁面互動 整頁都需要 Hydrate 且需將 JavaScript 都載到客戶端才能進行    頁面資料加載阻塞渲染的範例 ( 以下範例皆以 Next.Js 為主">
+        <meta name="description" content="回顧 JavaScript 中的重要基本概念。 📌 構造函式構造函式是一種用來建立物件的函式，透過 new 關鍵字來建立新的物件實例。其目的是讓類似的物件共享相同的屬性與方法，使程式碼更簡潔並提高可重複使用性。 12345678910111213function Animal(name, sound) &#123;  this.name &#x3D; name;  this.makeSound &#x3D; fun">
 <meta property="og:type" content="article">
-<meta property="og:title" content="React Server Component">
-<meta property="og:url" content="https://tom00qq.github.io/blog.github.io/2025/01/18/react-server-component/index.html">
+<meta property="og:title" content="javascript-review">
+<meta property="og:url" content="https://tom00qq.github.io/blog.github.io/2025/05/19/javascript-review/index.html">
 <meta property="og:site_name" content="TomHung&#39;s Blog">
-<meta property="og:description" content="什麼是 React Server Component？SSR 運作機制的瓶頸儘管 SSR 能夠迅速提供渲染好的 HTML，但也有其困境在：  在開始渲染頁面之前，需等待頁面資料加載完成 整頁 Hydration 階段完成前，客戶端不能與頁面互動 整頁都需要 Hydrate 且需將 JavaScript 都載到客戶端才能進行    頁面資料加載阻塞渲染的範例 ( 以下範例皆以 Next.Js 為主">
+<meta property="og:description" content="回顧 JavaScript 中的重要基本概念。 📌 構造函式構造函式是一種用來建立物件的函式，透過 new 關鍵字來建立新的物件實例。其目的是讓類似的物件共享相同的屬性與方法，使程式碼更簡潔並提高可重複使用性。 12345678910111213function Animal(name, sound) &#123;  this.name &#x3D; name;  this.makeSound &#x3D; fun">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2025-01-18T07:16:07.000Z">
-<meta property="article:modified_time" content="2025-05-14T07:16:52.710Z">
+<meta property="article:published_time" content="2025-05-19T07:20:58.000Z">
+<meta property="article:modified_time" content="2025-05-19T07:59:40.774Z">
 <meta property="article:author" content="TomHung">
-<meta property="article:tag" content="React">
+<meta property="article:tag" content="JavaScript">
 <meta name="twitter:card" content="summary">
     
     
@@ -44,7 +44,7 @@
     
     <title>
         
-            React Server Component | BLOG
+            javascript-review | BLOG
         
     </title>
 
@@ -318,7 +318,7 @@
 		<div class="article-title relative w-full">
 			
 			<div class="w-full flex items-center pt-6 justify-start">
-				<h1 class="article-title-regular text-second-text-color tracking-tight text-4xl md:text-6xl font-semibold px-2 sm:px-6 md:px-8 py-3">React Server Component</h1>
+				<h1 class="article-title-regular text-second-text-color tracking-tight text-4xl md:text-6xl font-semibold px-2 sm:px-6 md:px-8 py-3">javascript-review</h1>
 			</div>
 			
 		</div>
@@ -337,15 +337,15 @@
 					<div class="article-meta-info">
     <span class="article-date article-meta-item">
         <i class="fa-regular fa-pen-fancy"></i>&nbsp;
-        <span class="desktop">2025-01-18 15:16:07</span>
-        <span class="mobile">2025-01-18 15:16:07</span>
+        <span class="desktop">2025-05-19 15:20:58</span>
+        <span class="mobile">2025-05-19 15:20:58</span>
         <span class="hover-info">Created</span>
     </span>
     
         <span class="article-date article-meta-item">
             <i class="fa-regular fa-wrench"></i>&nbsp;
-            <span class="desktop">2025-05-14 15:16:52</span>
-            <span class="mobile">2025-05-14 15:16:52</span>
+            <span class="desktop">2025-05-19 15:59:40</span>
+            <span class="mobile">2025-05-19 15:59:40</span>
             <span class="hover-info">Updated</span>
         </span>
     
@@ -373,7 +373,7 @@
             <ul>
                 
                     <li>
-                        <a href="/blog.github.io/tags/React/">React</a>&nbsp;
+                        <a href="/blog.github.io/tags/JavaScript/">JavaScript</a>&nbsp;
                     </li>
                 
             </ul>
@@ -395,72 +395,116 @@
 
 
 		<div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
-			<h2 id="什麼是-React-Server-Component？"><a href="#什麼是-React-Server-Component？" class="headerlink" title="什麼是 React Server Component？"></a>什麼是 React Server Component？</h2><h3 id="SSR-運作機制的瓶頸"><a href="#SSR-運作機制的瓶頸" class="headerlink" title="SSR 運作機制的瓶頸"></a>SSR 運作機制的瓶頸</h3><p>儘管 SSR 能夠迅速提供渲染好的 HTML，但也有其困境在：</p>
+			<p>回顧 JavaScript 中的重要基本概念。</p>
+<h3 id="📌-構造函式"><a href="#📌-構造函式" class="headerlink" title="📌 構造函式"></a><strong>📌 構造函式</strong></h3><p>構造函式是一種用來建立物件的函式，透過 <code>new</code> 關鍵字來建立新的物件實例。<br>其目的是讓類似的物件共享相同的屬性與方法，使程式碼更簡潔並提高可重複使用性。</p>
+<div class="code-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">Animal</span>(<span class="params">name, sound</span>) &#123;</span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">name</span> = name;</span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">makeSound</span> = <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(sound);</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Animal 是 dog &amp; cat 的原型。</span></span><br><span class="line"><span class="keyword">const</span> dog = <span class="keyword">new</span> <span class="title class_">Animal</span>(<span class="string">&quot;dog&quot;</span>, <span class="string">&quot;woof&quot;</span>);</span><br><span class="line"><span class="keyword">const</span> cat = <span class="keyword">new</span> <span class="title class_">Animal</span>(<span class="string">&quot;cat&quot;</span>, <span class="string">&quot;meow&quot;</span>);</span><br><span class="line"></span><br><span class="line">dog.<span class="title function_">makeSound</span>(); <span class="comment">// woof</span></span><br><span class="line">cat.<span class="title function_">makeSound</span>(); <span class="comment">// meow</span></span><br></pre></td></tr></table></figure></div>
+
+<br/>
+
+<p>搭配 prototype 屬性甚至可以從原型繼承屬性、方法，以節省記憶體。</p>
+<div class="code-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">Animal</span>(<span class="params">name, sound</span>) &#123;</span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">name</span> = name;</span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">sound</span> = sound;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// dog / cat 不用建立自己的 makeSound</span></span><br><span class="line"><span class="title class_">Anmimal</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">makeSound</span> = <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="variable language_">this</span>.<span class="property">sound</span>);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> dog = <span class="keyword">new</span> <span class="title class_">Animal</span>(<span class="string">&quot;dog&quot;</span>, <span class="string">&quot;woof&quot;</span>);</span><br><span class="line"><span class="keyword">const</span> cat = <span class="keyword">new</span> <span class="title class_">Animal</span>(<span class="string">&quot;cat&quot;</span>, <span class="string">&quot;meow&quot;</span>);</span><br><span class="line"></span><br><span class="line">dog.<span class="title function_">makeSound</span>(); <span class="comment">// woof</span></span><br><span class="line">cat.<span class="title function_">makeSound</span>(); <span class="comment">// meow</span></span><br></pre></td></tr></table></figure></div>
+
+<br/>
+
+<p><strong>關於構造函式</strong></p>
 <ul>
-<li>在開始渲染頁面之前，需等待頁面資料加載完成</li>
-<li>整頁 Hydration 階段完成前，客戶端不能與頁面互動</li>
-<li>整頁都需要 Hydrate 且需將 JavaScript 都載到客戶端才能進行</li>
+<li>構造函式用大寫開頭</li>
+<li>用 new 新增實例</li>
+<li>new 會把 this 綁在實例上、把實例 [[Prototype]] 屬性指向原型的 prototype</li>
+<li>箭頭函式沒有 prototype 屬性，不能當構造函式</li>
 </ul>
 <br/>
 
-<p>頁面資料加載阻塞渲染的範例 ( 以下範例皆以 Next.Js 為主 )</p>
-<div class="code-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Home Page 頁面</span></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">Home</span> = (<span class="params">&#123; data &#125;</span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">ComponentA</span> <span class="attr">data</span>=<span class="string">&#123;data&#125;</span> /&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">ComponentB</span> /&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="title function_">getServerSideProps</span> = <span class="keyword">async</span> (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">  <span class="comment">// 只有 ComponentA 需要 data，ComponentB 也需要跟著等待</span></span><br><span class="line">  <span class="keyword">const</span> data = <span class="keyword">await</span> <span class="title function_">getComponentAData</span>();</span><br><span class="line">  <span class="keyword">return</span> &#123;<span class="attr">props</span>:&#123; data &#125;&#125;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></div>
-
-<br>
-
-<blockquote>
-<p><b>Hydration 階段</b><br>渲染產生的 HTML 是靜態的，若要具備互動性（例如：按鈕可按下並觸發事件）需要經過 Hydration 階段。<br>意思是載入 JavaScript 將 React 狀態與 DOM 的監聽事件綁定，才能具有互動性。</p>
-</blockquote>
-<br>
-
-<h3 id="Suspense-元件延遲渲染"><a href="#Suspense-元件延遲渲染" class="headerlink" title="Suspense 元件延遲渲染"></a>Suspense 元件延遲渲染</h3><p>為解決 SSR 整頁式渲染的運作機制，React 提出允許延遲渲染的 Suspense 元件，核心概念：</p>
-<ul>
-<li>伺服器優先渲染非 Suspense 區塊並分批發給客戶端，不必等待整頁一次性回覆(串流式渲染)</li>
-</ul>
-<p>範例中 ComponentB 將優先回傳，ComponentA 則可以延遲渲染後回傳給客戶端 :</p>
-<div class="code-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Home Page 頁面</span></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">Home</span> = (<span class="params">&#123; data &#125;</span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">Suspense</span> <span class="attr">fallback</span>=<span class="string">&#123;</span>&lt;<span class="attr">div</span>&gt;</span>Loading Component A...<span class="tag">&lt;/<span class="name">div</span>&gt;</span>&#125;&gt;</span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;<span class="name">ComponentA</span> <span class="attr">data</span>=<span class="string">&#123;data&#125;</span> /&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;/<span class="name">Suspense</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">ComponentB</span> /&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="title function_">getServerSideProps</span> = <span class="keyword">async</span> (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> data = <span class="keyword">await</span> <span class="title function_">getComponentAData</span>();</span><br><span class="line">  <span class="keyword">return</span> &#123;<span class="attr">props</span>:&#123; data &#125;&#125;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></div>
-
-<br>
-
-<p>即便提出了延遲區塊渲染的優化方案，核心問題仍然存在。<br>因此，才有了今天的主角 React Server Component（or RSC)。</p>
-<h3 id="React-Server-Component-RSC"><a href="#React-Server-Component-RSC" class="headerlink" title="React Server Component ( RSC )"></a>React Server Component ( RSC )</h3><p>RSC 並不是為了取代 SSR 或 Suspense，而是改變了 SSR 的運作機制。<br/><br>一般來說，完整的應用程式除了 RSC 還會有 Client Component (or RCC)。</p>
-<h4 id="RSC-特點"><a href="#RSC-特點" class="headerlink" title="RSC 特點"></a>RSC 特點</h4><ul>
-<li>將 加載資料 與 渲染 在伺服器端以 「元件」 為單位處理</li>
-<li>串流方式回傳給客戶端</li>
-<li>減少伺服器需打包並傳輸給客戶端的 JavaScript</li>
-</ul>
-<br/>
-
-<p>RSC 有別於 SSR，伺服器接受到頁面請求後是以「元件」為單位驅動處理的，所以不會有頁面下 A 元件需要 A 資料，B 元件不需要卻得等 A 資料加載完成才能渲染的問題。RSC 得以讓 A 元件取 A 資料，B 元件同時渲染自己的內容，兩者平行處理。</p>
-<p>頁面下中的 RSC 與 RCC，不必等待全數渲染完成才回傳，優先完成的部分將分批回傳給客戶端，讓初次載入速度更快使用者體驗更佳，且串流式渲染的 SEO 在現代瀏覽器中能夠被爬蟲識別。</p>
-<p>由於 RSC 在伺服器就渲染成靜態 HTML，本身又不包含客戶端操作邏輯，因此相比 SSR 要打包交給客戶端處理的 JavaScript 減少了且 RSC 不必 Hydrate。</p>
-<h4 id="RCC-特點"><a href="#RCC-特點" class="headerlink" title="RCC 特點"></a>RCC 特點</h4><ul>
-<li>處理客戶端操作邏輯</li>
-<li>客戶端包含 Hydration 階段</li>
-</ul>
-<p>RCC 主要處理客戶端的操作邏輯，運作方式如同 SSR，伺服器渲染後的結果包含: HTML、JavaScript，再交客戶端 Hydrate。</p>
-<p>以 RSC 與 RCC 組成頁面</p>
-<div class="code-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ComponentA.js = React Server Component (RSC)</span></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">ComponentA</span> = <span class="keyword">async</span> (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> data = <span class="keyword">await</span> <span class="title function_">fetchComponentAData</span>();</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">h2</span>&gt;</span>Component A<span class="tag">&lt;/<span class="name">h2</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;data&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ComponentB.js = React Client Component (RCC)</span></span><br><span class="line"><span class="string">&quot;use client&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">ComponentB</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> [count, setCount] = <span class="title function_">useState</span>(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> <span class="title function_">handleClick</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">    <span class="title function_">setCount</span>(count + <span class="number">1</span>);</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">button</span> <span class="attr">onClick</span>=<span class="string">&#123;handleClick&#125;</span>&gt;</span>Click me<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">p</span>&gt;</span>Button clicked &#123;count&#125; times<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Home Page 頁面</span></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">Page</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">ComponentA</span> /&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">ComponentB</span> /&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></div>
+<p><strong>ES6 Class</strong></p>
+<p>在 ES6 之後，可以使用 class（語法糖），內部仍然基於 prototype，但語法更直觀，不需要手動指定 prototype</p>
+<div class="code-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Animal</span> &#123;</span><br><span class="line">  <span class="title function_">constructor</span>(<span class="params">name, sound</span>) &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">name</span> = name;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">sound</span> = sound;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="title function_">makeSound</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="variable language_">this</span>.<span class="property">sound</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> dog = <span class="keyword">new</span> <span class="title class_">Animal</span>(<span class="string">&quot;dog&quot;</span>, <span class="string">&quot;woof&quot;</span>);</span><br><span class="line"><span class="keyword">const</span> cat = <span class="keyword">new</span> <span class="title class_">Animal</span>(<span class="string">&quot;cat&quot;</span>, <span class="string">&quot;meow&quot;</span>);</span><br><span class="line"></span><br><span class="line">dog.<span class="title function_">makeSound</span>(); <span class="comment">// woof</span></span><br><span class="line">cat.<span class="title function_">makeSound</span>(); <span class="comment">// meow</span></span><br></pre></td></tr></table></figure></div>
 
 <br/>
 
-<p>假如 ComponentA 加載資料(fetchComponentAData)過程很慢，ComponentB 也能先渲染並回傳給客戶端進行 Hydrate，於此同時， ComponentA 繼續直到完成後再回傳。</p>
-<h4 id="RSC-RCC-下-Suspense-的職責"><a href="#RSC-RCC-下-Suspense-的職責" class="headerlink" title="RSC&#x2F;RCC 下 Suspense 的職責"></a>RSC&#x2F;RCC 下 Suspense 的職責</h4><ul>
-<li>SSR: Suspense 是實現串流渲染的必要元件，配置才能延遲渲染。</li>
-<li>RSC&#x2F;RCC: 元件本身已支持串流渲染，因此 Suspense 職責著重在為慢速、次要元件準備 fallback UI。</li>
+<h3 id="📌-原型＆繼承"><a href="#📌-原型＆繼承" class="headerlink" title="📌 原型＆繼承"></a><strong>📌 原型＆繼承</strong></h3><ul>
+<li>繼承主要目的是節省記憶體，不要每個實例都建立一樣的屬性、方法。</li>
+<li>不是只有 構造函式有原型繼承</li>
+<li>運作方式 : 每個物件都有 <code>[[Prototype]]</code> 屬性，每當調用屬性、方法時會先從自己找起，如果找不到就會從 <code>[[Prototype]]</code> 往原型去找（ 即 <strong>原型鏈</strong> ），一直找到最頂層 Object 仍找不到就會 undefined。</li>
+<li>關於原型的常見名詞：</li>
 </ul>
-<h4 id="運作流程"><a href="#運作流程" class="headerlink" title="運作流程"></a>運作流程</h4><div class="code-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title function_">Page</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">var</span> pageData = <span class="keyword">await</span> <span class="title function_">getPageData</span>();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">h1</span>&gt;</span>&#123;pageData.title&#125;<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span></span><br><span class="line"><span class="language-xml"></span></span><br><span class="line"><span class="language-xml">      &#123;/* RSC */&#125;</span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">Suspense</span> <span class="attr">fallback</span>=<span class="string">&#123;</span>&lt;<span class="attr">Loading</span> /&gt;</span>&#125;&gt;</span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;<span class="name">ServerComponent</span> /&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;/<span class="name">Suspense</span>&gt;</span></span></span><br><span class="line"><span class="language-xml"></span></span><br><span class="line"><span class="language-xml">       &#123;/* RCC */&#125;</span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">ClientComponentB</span> /&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></div>
+<table>
+<thead>
+<tr>
+<th>名稱</th>
+<th>描述</th>
+<th>屬於誰</th>
+<th>如何存取</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>[[Prototype]]</code></td>
+<td>每個物件的內部隱藏屬性，指向其原型物件</td>
+<td>所有物件</td>
+<td>不能直接存取，可透過 <code>Object.getPrototypeOf()</code> 或 <code>__proto__</code> 來讀取</td>
+<td>讓物件能夠從原型繼承屬性與方法</td>
+</tr>
+<tr>
+<td><code>__proto__</code></td>
+<td>非標準但常用的屬性，提供對 <code>[[Prototype]]</code> 的存取方式（舊式作法）</td>
+<td>所有物件</td>
+<td><code>obj.__proto__</code>（不推薦）</td>
+<td>允許手動變更物件的原型</td>
+</tr>
+<tr>
+<td><code>Object.getPrototypeOf()</code> &#x2F; <code>Object.setPrototypeOf()</code></td>
+<td>標準 API，讀取&#x2F;設定 <code>[[Prototype]]</code></td>
+<td>所有物件</td>
+<td><code>Object.getPrototypeOf(obj)</code> &#x2F; <code>Object.setPrototypeOf(obj, newProto)</code></td>
+<td>建議使用的方式來存取 <code>[[Prototype]]</code></td>
+</tr>
+<tr>
+<td><code>prototype</code></td>
+<td>函式的屬性，建立物件時會成為實例的 <code>[[Prototype]]</code></td>
+<td>函式</td>
+<td><code>ConstructorFunction.prototype</code></td>
+<td>定義共享的方法和屬性，供所有實例繼承</td>
+</tr>
+</tbody></table>
+<br/>
 
-<p>再次強調，SSR 指的是伺服器端的渲染，而 RSC 的出現改善了 SSR 的運作機制，並不是取代 SSR.</p>
-<p>說明</p>
-<ol>
-<li>Page 為頁面層級的元件，因此需等待 pageData 後才能接續渲染</li>
-<li>併行渲染 Page 內部的內容，若 RSC&#x2F;RCC 包含加載資料則分別處理</li>
-<li>h1、Suspense 先回傳給客戶端頁面</li>
-<li>同時 ServerComponent、ClientComponentB 繼續渲染直到完成再給客戶端</li>
-<li>僅 ClientComponentB 在客戶端需要 Hydrate</li>
-<li>完成頁面渲染</li>
-</ol>
+<h3 id="📌-參照型別"><a href="#📌-參照型別" class="headerlink" title="📌 參照型別"></a><strong>📌 參照型別</strong></h3><p>在以下對象中，賦值（<code>a = b</code>） 時並不是「複製」，而傳遞參照（記憶體）位置，沒有釐清很常發生非預期的結果。</p>
+<table>
+<thead>
+<tr>
+<th>型別</th>
+<th>範例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Object</code></td>
+<td><code>&#123; name: &#39;Alice&#39; &#125;</code></td>
+</tr>
+<tr>
+<td><code>Array</code></td>
+<td><code>[1, 2, 3]</code></td>
+</tr>
+<tr>
+<td><code>Function</code></td>
+<td><code>function() &#123;&#125;</code></td>
+</tr>
+<tr>
+<td><code>Map / Set</code></td>
+<td><code>new Map()</code> &#x2F; new Set( )</td>
+</tr>
+</tbody></table>
+<h4 id="參考案例"><a href="#參考案例" class="headerlink" title="參考案例"></a>參考案例</h4><p>案例 1</p>
+<div class="code-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> a = <span class="keyword">new</span> <span class="title class_">Map</span>();</span><br><span class="line"><span class="keyword">const</span> b = a;</span><br><span class="line"></span><br><span class="line">b.<span class="title function_">set</span>(<span class="string">&quot;test&quot;</span>, <span class="number">123</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(b.<span class="title function_">get</span>(<span class="string">&quot;test&quot;</span>)); <span class="comment">// 123</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(a.<span class="title function_">get</span>(<span class="string">&quot;test&quot;</span>)); <span class="comment">// 123</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 因為 b 並非複製而是參照 a，因此 a 也跟著改</span></span><br></pre></td></tr></table></figure></div>
+
+<p>案例 2</p>
+<div class="code-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> a = &#123; <span class="attr">x</span>: <span class="number">1</span> &#125;;</span><br><span class="line"><span class="keyword">const</span> b = &#123; <span class="attr">x</span>: <span class="number">1</span> &#125;;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(a === b); <span class="comment">// false ❌ 即使內容一樣，但比參照型別的物件比較的是記憶體位置，所以兩個是不同物件，</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> c = a;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(c === a); <span class="comment">// true ✅ 同一個參照</span></span><br></pre></td></tr></table></figure></div>
+
+<br>
+> <b>若要讓 a===b 相等該怎麼做？</b>
+>
+> 1. JSON.stringify(a) === JSON.stringify(b)，限制是 ㄋ JSON 格式不能比較函式、undefined
+> 2. Losdash.isEqual(a,b)
+> 3. 自己撰寫遞迴深層比較的邏輯
 
 		</div>
 
@@ -468,18 +512,18 @@
 		<div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
 			<div class="article-copyright-info-container">
     <ul>
-        <li><strong>Title:</strong> React Server Component</li>
+        <li><strong>Title:</strong> javascript-review</li>
         <li><strong>Author:</strong> TomHung</li>
         <li><strong>Created at
-                :</strong> 2025-01-18 15:16:07</li>
+                :</strong> 2025-05-19 15:20:58</li>
         
             <li>
                 <strong>Updated at
-                    :</strong> 2025-05-14 15:16:52
+                    :</strong> 2025-05-19 15:59:40
             </li>
         
         <li>
-            <strong>Link:</strong> https://tom00qq.github.io/blog.github.io/2025/01/18/react-server-component/
+            <strong>Link:</strong> https://tom00qq.github.io/blog.github.io/2025/05/19/javascript-review/
         </li>
         <li>
             <strong>
@@ -501,7 +545,7 @@
 		<ul class="post-tags-box text-lg mt-1.5 flex-wrap justify-center flex md:hidden">
 			
 			<li class="tag-item mx-0.5">
-				<a href="/blog.github.io/tags/React/">#React</a>&nbsp;
+				<a href="/blog.github.io/tags/JavaScript/">#JavaScript</a>&nbsp;
 			</li>
 			
 		</ul>
@@ -512,23 +556,11 @@
 		
 		<div class="article-nav my-8 flex justify-between items-center px-2 sm:px-6 md:px-8">
 			
-			<div class="article-prev border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
-				<a class="prev" rel="prev" href="/blog.github.io/2025/03/26/event-loop/">
-					<span class="left arrow-icon flex justify-center items-center">
-						<i class="fa-solid fa-chevron-left"></i>
-					</span>
-					<span class="title flex justify-center items-center">
-						<span class="post-nav-title-item">Event-loop</span>
-						<span class="post-nav-item">Prev posts</span>
-					</span>
-				</a>
-			</div>
-			
 			
 			<div class="article-next border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
-				<a class="next" rel="next" href="/blog.github.io/2025/01/18/react-render/">
+				<a class="next" rel="next" href="/blog.github.io/2025/03/26/event-loop/">
 					<span class="title flex justify-center items-center">
-						<span class="post-nav-title-item">React 渲染</span>
+						<span class="post-nav-title-item">Event-loop</span>
 						<span class="post-nav-item">Next posts</span>
 					</span>
 					<span class="right arrow-icon flex justify-center items-center">
@@ -549,8 +581,8 @@
 		<div class="post-toc-wrap">
 	<div class="post-toc">
 		<div class="toc-title">On this page</div>
-		<div class="page-title">React Server Component</div>
-		<ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E9%BA%BC%E6%98%AF-React-Server-Component%EF%BC%9F"><span class="nav-text">什麼是 React Server Component？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SSR-%E9%81%8B%E4%BD%9C%E6%A9%9F%E5%88%B6%E7%9A%84%E7%93%B6%E9%A0%B8"><span class="nav-text">SSR 運作機制的瓶頸</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Suspense-%E5%85%83%E4%BB%B6%E5%BB%B6%E9%81%B2%E6%B8%B2%E6%9F%93"><span class="nav-text">Suspense 元件延遲渲染</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#React-Server-Component-RSC"><span class="nav-text">React Server Component ( RSC )</span></a></li></ol></li></ol>
+		<div class="page-title">javascript-review</div>
+		<ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%F0%9F%93%8C-%E6%A7%8B%E9%80%A0%E5%87%BD%E5%BC%8F"><span class="nav-text">📌 構造函式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%F0%9F%93%8C-%E5%8E%9F%E5%9E%8B%EF%BC%86%E7%B9%BC%E6%89%BF"><span class="nav-text">📌 原型＆繼承</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%F0%9F%93%8C-%E5%8F%83%E7%85%A7%E5%9E%8B%E5%88%A5"><span class="nav-text">📌 參照型別</span></a></li></ol>
 
 	</div>
 </div>
