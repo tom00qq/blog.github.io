@@ -29,7 +29,7 @@
 <meta property="og:description" content="回顧 JavaScript 中的重要基本概念。 📌 構造函式構造函式是一種用來建立物件的函式，透過 new 關鍵字來建立新的物件實例。其目的是讓類似的物件共享相同的屬性與方法，使程式碼更簡潔並提高可重複使用性。 12345678910111213function Animal(name, sound) &#123;  this.name &#x3D; name;  this.makeSound &#x3D; fun">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2025-05-19T07:20:58.000Z">
-<meta property="article:modified_time" content="2025-05-19T07:59:40.774Z">
+<meta property="article:modified_time" content="2025-05-20T03:03:52.144Z">
 <meta property="article:author" content="TomHung">
 <meta property="article:tag" content="JavaScript">
 <meta name="twitter:card" content="summary">
@@ -344,8 +344,8 @@
     
         <span class="article-date article-meta-item">
             <i class="fa-regular fa-wrench"></i>&nbsp;
-            <span class="desktop">2025-05-19 15:59:40</span>
-            <span class="mobile">2025-05-19 15:59:40</span>
+            <span class="desktop">2025-05-20 11:03:52</span>
+            <span class="mobile">2025-05-20 11:03:52</span>
             <span class="hover-info">Updated</span>
         </span>
     
@@ -490,7 +490,7 @@
 </tr>
 <tr>
 <td><code>Map / Set</code></td>
-<td><code>new Map()</code> &#x2F; new Set( )</td>
+<td><code>new Map()</code> &#x2F; <code>new Set()</code></td>
 </tr>
 </tbody></table>
 <h4 id="參考案例"><a href="#參考案例" class="headerlink" title="參考案例"></a>參考案例</h4><p>案例 1</p>
@@ -500,11 +500,15 @@
 <div class="code-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> a = &#123; <span class="attr">x</span>: <span class="number">1</span> &#125;;</span><br><span class="line"><span class="keyword">const</span> b = &#123; <span class="attr">x</span>: <span class="number">1</span> &#125;;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(a === b); <span class="comment">// false ❌ 即使內容一樣，但比參照型別的物件比較的是記憶體位置，所以兩個是不同物件，</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> c = a;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(c === a); <span class="comment">// true ✅ 同一個參照</span></span><br></pre></td></tr></table></figure></div>
 
 <br>
-> <b>若要讓 a===b 相等該怎麼做？</b>
->
-> 1. JSON.stringify(a) === JSON.stringify(b)，限制是 ㄋ JSON 格式不能比較函式、undefined
-> 2. Losdash.isEqual(a,b)
-> 3. 自己撰寫遞迴深層比較的邏輯
+
+<blockquote>
+<p><b>若要讓 a&#x3D;&#x3D;&#x3D;b 相等該怎麼做？</b></p>
+<ol>
+<li>JSON.stringify(a) &#x3D;&#x3D;&#x3D; JSON.stringify(b)，限制是 ㄋ JSON 格式不能比較函式、undefined</li>
+<li>Losdash.isEqual(a,b)</li>
+<li>自己撰寫遞迴深層比較的邏輯</li>
+</ol>
+</blockquote>
 
 		</div>
 
@@ -519,7 +523,7 @@
         
             <li>
                 <strong>Updated at
-                    :</strong> 2025-05-19 15:59:40
+                    :</strong> 2025-05-20 11:03:52
             </li>
         
         <li>
