@@ -29,7 +29,7 @@
 <meta property="og:description" content="要認識 Vite 就要先認識開發週期中的構建階段開始談起，所以我的文章安排將由構建開始，希望可以用更完整得脈絡，描述工具的誕生的緣由，再談及身為開發者的我們可以怎麼運用。 什麼是構建？現代前端開發的挑戰隨著 Web 應用程式變得越來越複雜、更具規模，為了確保開發效率、程式碼品質、可維護性，開發者在原始碼中導入了許多提升開發體驗的功能和語法：  熱模組替換 (HMR)：即時看到修改後的效果，無需手動">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2025-06-23T08:40:35.000Z">
-<meta property="article:modified_time" content="2025-06-24T09:51:33.917Z">
+<meta property="article:modified_time" content="2025-06-26T08:09:34.764Z">
 <meta property="article:author" content="TomHung">
 <meta name="twitter:card" content="summary">
     
@@ -343,8 +343,8 @@
     
         <span class="article-date article-meta-item">
             <i class="fa-regular fa-wrench"></i>&nbsp;
-            <span class="desktop">2025-06-24 17:51:33</span>
-            <span class="mobile">2025-06-24 17:51:33</span>
+            <span class="desktop">2025-06-26 16:09:34</span>
+            <span class="mobile">2025-06-26 16:09:34</span>
             <span class="hover-info">Updated</span>
         </span>
     
@@ -407,7 +407,7 @@
 </ul>
 <br>
 
-<p>雖然上述提到了開發、正式階段，不過更加精確來說，構建其實是指「生成正式環境程式碼的整個流程」。<br>如果已經有使用框架的經驗，其實最常用到的「npm run build」背後就是去調用構建工具來完成這個流程。<br><br></p>
+<p>雖然上述提到了開發、正式階段，不過更加精確來說，構建其實是指「生成正式環境程式碼的整個流程」。如果已經有使用框架的經驗，其實最常用到的「npm run build」背後就是去調用構建工具來完成這個流程。<br><br></p>
 <h2 id="構建的流程"><a href="#構建的流程" class="headerlink" title="構建的流程"></a>構建的流程</h2><p>構建的流程，涵蓋多種問題與解決方案，並且是逐步演化而來的，大致如下：</p>
 <ul>
 <li><p>開發體驗階段</p>
@@ -435,10 +435,27 @@
 </ul>
 </li>
 </ul>
-<p>既然有不同的問題與解決方案，那自然會有很多工具，比如：Webpack、Babel、SWC …，有些工具相當輕量只針對單個問題問題，有些則是組合包滿足多種需求。<br>而 Vite 正是多種構建工具之一，屬於可以滿足多種需求的類型。</p>
+<p>既然有不同的問題與解決方案，那自然會有很多工具，比如：Webpack、Babel、SWC …，有些工具相當輕量只針對單個問題，有些則滿足多種需求。<br>而 Vite 正是多種構建工具之一，屬於可以滿足多種需求的類型。</p>
 <br>
 
-<h2 id="Vite-登場"><a href="#Vite-登場" class="headerlink" title="Vite 登場"></a>Vite 登場</h2><h2 id="配置與應用"><a href="#配置與應用" class="headerlink" title="配置與應用"></a>配置與應用</h2>
+<h2 id="Vite-登場"><a href="#Vite-登場" class="headerlink" title="Vite 登場"></a>Vite 登場</h2><p>Vite 做為 Web 應用的構建工具，提升了開發體驗與應用性能。</p>
+<p><strong>開發體驗</strong> <br></p>
+<ol>
+<li><p><strong>提升開發伺服器的啟動速度</strong> <br><br>在開發環境，將程式碼區分依賴與原始碼，並搭配現代瀏覽器接收 ESM（模組） 的機制，優化啟動速度。 <br></p>
+<ul>
+<li><p>現代瀏覽器與 ESM <br><br>允許解析 ESM 的 JavaScript 檔案（<code>import</code> &#x2F; <code>export</code>），改善開發伺服器必須打包才能給瀏覽器的狀況。</p>
+</li>
+<li><p>依賴 <br><br>指第三方套件（<code>node_modules</code>），在專案中套件程式碼的變動性低，因此 Vite 在啟動開發伺服器時會進行 pre-build，pre-build 的結果會快取（<code>node_modules/.vite</code>），而且是 ESM 格式。（ pre-build 透過 esbuild 工具實現打包 ）</p>
+</li>
+<li><p>原始碼 <br><br>指開發者的原始碼，Vite 實現先啟動開發伺服器，再針對請求路由回傳 ESM 檔案給瀏覽器解析的機制，緩解傳統上必須先將應用程式打包( Bundle based dev server ) 才能啟動伺服器的狀況。</p>
+</li>
+</ul>
+</li>
+<li><p><strong>提升 HMR（Hot Module Replacement）更新速度</strong> <br><br>( 施工中 …)</p>
+</li>
+</ol>
+<h2 id="配置與應用"><a href="#配置與應用" class="headerlink" title="配置與應用"></a>配置與應用</h2><p>Note:<br>優化行距、字體大小</p>
+
 		</div>
 
 		
@@ -452,7 +469,7 @@
         
             <li>
                 <strong>Updated at
-                    :</strong> 2025-06-24 17:51:33
+                    :</strong> 2025-06-26 16:09:34
             </li>
         
         <li>

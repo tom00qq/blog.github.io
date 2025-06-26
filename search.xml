@@ -205,6 +205,78 @@
       </tags>
   </entry>
   <entry>
+    <title>netCore-middleware</title>
+    <url>/blog.github.io/2024/10/22/netCore-middleware/</url>
+    <content><![CDATA[<h2 id="ASP-NET-Core-Middleware"><a href="#ASP-NET-Core-Middleware" class="headerlink" title="ASP.NET Core Middleware"></a>ASP.NET Core Middleware</h2><p>Middleware is software that’s assembled into an app pipeline to handle requests and responses , as below</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/blog.github.io/2024/10/22/netCore-middleware/request-delegate-pipeline.png"
+                      alt="request-delegate-pipeline"
+                ></p>
+<p><a class="link"   href="https://learn.microsoft.com/en-us/aspnet/core/fundamentals/middleware/?view=aspnetcore-8.0" >ref : ASP.NET Core Middleware<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></p>
+<p>it’s ok to setup middleware with single or chained multiples, example :</p>
+<p>ASP.NET Core Program.cs file with</p>
+<p>( single middleware return result directly )</p>
+<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> builder = WebApplication.CreateBuilder(args);</span><br><span class="line"><span class="keyword">var</span> app = builder.Build();</span><br><span class="line"></span><br><span class="line">app.Run(<span class="keyword">async</span> context =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">await</span> context.Response.WriteAsync(<span class="string">&quot;Hello world!&quot;</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">app.Run();</span><br></pre></td></tr></table></figure></div>
+
+<p>( chained middlewares by app.Use(…) )</p>
+<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> builder = WebApplication.CreateBuilder(args);</span><br><span class="line"><span class="keyword">var</span> app = builder.Build();</span><br><span class="line"></span><br><span class="line">app.Use(<span class="keyword">async</span> (context, next) =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Do work that can write to the Response.</span></span><br><span class="line">    <span class="keyword">await</span> next.Invoke();</span><br><span class="line">    <span class="comment">// Do logging or other work that doesn&#x27;t write to the Response.</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">app.Run(<span class="keyword">async</span> context =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">await</span> context.Response.WriteAsync(<span class="string">&quot;Hello from 2nd delegate.&quot;</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">app.Run();</span><br></pre></td></tr></table></figure></div>
+
+<h2 id="Short-circuiting-the-request-pipeline"><a href="#Short-circuiting-the-request-pipeline" class="headerlink" title="Short-circuiting the request pipeline"></a>Short-circuiting the request pipeline</h2><p>the request could Short-circuiting to avoid unnecessary work, ex : add an static file middleware to hanldle static file request when the middleware been triggered it would response and ignore the middleware after.</p>
+<h2 id="Run-delegates"><a href="#Run-delegates" class="headerlink" title="Run delegates"></a>Run delegates</h2><p>is the end of middleware , Run or Use keywords after the first Run keyword would not be called.</p>
+<h2 id="Middleware-order"><a href="#Middleware-order" class="headerlink" title="Middleware order"></a>Middleware order</h2><p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/blog.github.io/2024/10/22/netCore-middleware/middleware-pipeline.svg"
+                      alt="middleware-pipeline"
+                ></p>
+<p>official provided recommonded order for the middleware , but the user can control over order by own. ( the order is determine by the code order )</p>
+<p>Why is there official pre-ordered order recommonded ?</p>
+<ul>
+<li><strong>Ensure Correct Functionality</strong> : <code>UseAuthentication</code> must run before <code>UseAuthorization</code> because the user must be authenticated before checking their permissions</li>
+<li><strong>Optimize Performance</strong> : By processing certain tasks earlier, such as static file requests or health checks, you can bypass more complex operations like authentication when they aren’t needed<br>Why is the order important ?</li>
+</ul>
+<br/>
+<b>
+As mentioned above "app.Run()" is the termianal of middlewares and in the img here shown endpoint is the end of middleware. So what are there relationships?
+</b>
+<br/><br/>
+
+<p>If app.Run() is placed before app.UseEndpoints(), MVC or Razor Pages endpoints will not execute. If placed after, it will only be hit if no endpoint matches the route.</p>
+<p>Since app.UseEndpoints() is responsible for executing the endpoint of your application (the actual logic that serves the request), app.Run() typically does not need to be used for handling requests in most standard cases, because MVC and Razor Pages handle requests fully.</p>
+<b>
+When to use app.Run() ?
+</b>
+
+<ul>
+<li>short-circuits</li>
+<li>simple app that no need for full MVC framework endpoint</li>
+</ul>
+<br/>
+
+<p>example :</p>
+<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> builder = WebApplication.CreateBuilder(args);</span><br><span class="line"><span class="keyword">var</span> app = builder.Build();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 1. 首先配置異常處理中間件</span></span><br><span class="line"></span><br><span class="line">app.UseExceptionHandler(<span class="string">&quot;/error&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 3. 第一個中間件</span></span><br><span class="line">app.Use(<span class="keyword">async</span> (context, next) =&gt;</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> currentPath = context.Request.Path;</span><br><span class="line">    Console.WriteLine(<span class="string">$&quot;中間件 1 - 進入 [<span class="subst">&#123;currentPath&#125;</span>]&quot;</span>);</span><br><span class="line">    <span class="keyword">await</span> next();</span><br><span class="line">    Console.WriteLine(<span class="string">$&quot;中間件 1 - 返回 [<span class="subst">&#123;currentPath&#125;</span>]&quot;</span>);</span><br><span class="line"></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 4. 第二個中間件（拋出異常的中間件）</span></span><br><span class="line">app.Use(<span class="keyword">async</span> (context, next) =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">var</span> currentPath = context.Request.Path;</span><br><span class="line">    Console.WriteLine(<span class="string">$&quot;中間件 2 - 進入 [<span class="subst">&#123;currentPath&#125;</span>]&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 先調用 next()</span></span><br><span class="line">    <span class="keyword">await</span> next();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 確保在拋出異常之前沒有寫入響應</span></span><br><span class="line">    <span class="keyword">if</span> (currentPath == <span class="string">&quot;/&quot;</span> &amp;&amp; !context.Response.HasStarted)</span><br><span class="line">    &#123;</span><br><span class="line">        Console.WriteLine(<span class="string">&quot;中間件 2 - 即將拋出異常&quot;</span>);</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> Exception(<span class="string">&quot;中間件 2 返回時拋出異常&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Console.WriteLine(<span class="string">$&quot;中間件 2 - 返回 [<span class="subst">&#123;currentPath&#125;</span>]&quot;</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 5. 首頁路由</span></span><br><span class="line">app.MapGet(<span class="string">&quot;/&quot;</span>, () =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    Console.WriteLine(<span class="string">&quot;處理首頁請求 [/]&quot;</span>);</span><br><span class="line">    <span class="comment">//return Results.Text(&quot;Hello World!&quot;, &quot;text/plain&quot;);</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 6. 錯誤處理路由</span></span><br><span class="line">app.Map(<span class="string">&quot;/error&quot;</span>, <span class="keyword">async</span> context =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    Console.WriteLine(<span class="string">&quot;進入錯誤處理頁面 [/error]&quot;</span>);</span><br><span class="line">    <span class="keyword">var</span> exceptionFeature =</span><br><span class="line">        context.Features.Get&lt;Microsoft.AspNetCore.Diagnostics.IExceptionHandlerPathFeature&gt;();</span><br><span class="line">    <span class="keyword">var</span> error = exceptionFeature?.Error;</span><br><span class="line">    <span class="keyword">var</span> originalPath = exceptionFeature?.Path;</span><br><span class="line"></span><br><span class="line">    Console.WriteLine(<span class="string">$&quot;原始請求路徑: <span class="subst">&#123;originalPath&#125;</span>&quot;</span>);</span><br><span class="line">    Console.WriteLine(<span class="string">$&quot;捕捉到的錯誤: <span class="subst">&#123;error?.Message&#125;</span>&quot;</span>);</span><br><span class="line"></span><br><span class="line">    context.Response.ContentType = <span class="string">&quot;text/plain&quot;</span>;</span><br><span class="line">    <span class="keyword">await</span> context.Response.WriteAsync(</span><br><span class="line">        <span class="string">$&quot;錯誤已被處理！\n&quot;</span> +</span><br><span class="line">        <span class="string">$&quot;原始請求: <span class="subst">&#123;originalPath&#125;</span>\n&quot;</span> +</span><br><span class="line">        <span class="string">$&quot;錯誤信息: <span class="subst">&#123;error?.Message&#125;</span>&quot;</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">app.Run();</span><br></pre></td></tr></table></figure></div>
+
+<p>result :</p>
+<div class="code-container" data-rel="Txt"><figure class="iseeu highlight txt"><table><tr><td class="code"><pre><span class="line">request: &quot;/&quot;</span><br><span class="line">1. 中間件 1 - 進入 [/]</span><br><span class="line">2. 中間件 2 - 進入 [/]</span><br><span class="line">3. 處理首頁請求 [/]</span><br><span class="line">4. 中間件 2 - 即將拋出異常</span><br><span class="line">5. 觸發 app.UseExceptionHandler(&quot;/error&quot;);</span><br><span class="line"></span><br><span class="line">request: &quot;/error&quot;</span><br><span class="line">1. 中間件 1 - 進入 [/error]</span><br><span class="line">2. 中間件 2 - 進入 [/error]</span><br><span class="line">3. 進入錯誤處理頁面 [/error]</span><br><span class="line">   原始請求路徑: /</span><br><span class="line">   捕捉到的錯誤 中間件 2 - 即將拋出異常</span><br><span class="line">4. 中間件 2 - 返回 [/error]</span><br><span class="line">5. 中間件 1 - 返回 [/error]</span><br></pre></td></tr></table></figure></div>
+
+<p>Don’t call next.Invoke during or after the response has been sent to the client.</p>
+<h2 id="MVC-Endpoint"><a href="#MVC-Endpoint" class="headerlink" title="MVC Endpoint"></a>MVC Endpoint</h2><p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/blog.github.io/2024/10/22/netCore-middleware/MVCEndpoint.png"
+                      alt="MVCEndpoint"
+                ></p>
+]]></content>
+      <categories>
+        <category>Backend</category>
+      </categories>
+      <tags>
+        <tag>.NET</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>javascript-review</title>
     <url>/blog.github.io/2025/05/19/javascript-review/</url>
     <content><![CDATA[<p>回顧 JavaScript 中的重要基本概念。</p>
@@ -330,78 +402,6 @@
       </tags>
   </entry>
   <entry>
-    <title>netCore-middleware</title>
-    <url>/blog.github.io/2024/10/22/netCore-middleware/</url>
-    <content><![CDATA[<h2 id="ASP-NET-Core-Middleware"><a href="#ASP-NET-Core-Middleware" class="headerlink" title="ASP.NET Core Middleware"></a>ASP.NET Core Middleware</h2><p>Middleware is software that’s assembled into an app pipeline to handle requests and responses , as below</p>
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/blog.github.io/2024/10/22/netCore-middleware/request-delegate-pipeline.png"
-                      alt="request-delegate-pipeline"
-                ></p>
-<p><a class="link"   href="https://learn.microsoft.com/en-us/aspnet/core/fundamentals/middleware/?view=aspnetcore-8.0" >ref : ASP.NET Core Middleware<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></p>
-<p>it’s ok to setup middleware with single or chained multiples, example :</p>
-<p>ASP.NET Core Program.cs file with</p>
-<p>( single middleware return result directly )</p>
-<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> builder = WebApplication.CreateBuilder(args);</span><br><span class="line"><span class="keyword">var</span> app = builder.Build();</span><br><span class="line"></span><br><span class="line">app.Run(<span class="keyword">async</span> context =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">await</span> context.Response.WriteAsync(<span class="string">&quot;Hello world!&quot;</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">app.Run();</span><br></pre></td></tr></table></figure></div>
-
-<p>( chained middlewares by app.Use(…) )</p>
-<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> builder = WebApplication.CreateBuilder(args);</span><br><span class="line"><span class="keyword">var</span> app = builder.Build();</span><br><span class="line"></span><br><span class="line">app.Use(<span class="keyword">async</span> (context, next) =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Do work that can write to the Response.</span></span><br><span class="line">    <span class="keyword">await</span> next.Invoke();</span><br><span class="line">    <span class="comment">// Do logging or other work that doesn&#x27;t write to the Response.</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">app.Run(<span class="keyword">async</span> context =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">await</span> context.Response.WriteAsync(<span class="string">&quot;Hello from 2nd delegate.&quot;</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">app.Run();</span><br></pre></td></tr></table></figure></div>
-
-<h2 id="Short-circuiting-the-request-pipeline"><a href="#Short-circuiting-the-request-pipeline" class="headerlink" title="Short-circuiting the request pipeline"></a>Short-circuiting the request pipeline</h2><p>the request could Short-circuiting to avoid unnecessary work, ex : add an static file middleware to hanldle static file request when the middleware been triggered it would response and ignore the middleware after.</p>
-<h2 id="Run-delegates"><a href="#Run-delegates" class="headerlink" title="Run delegates"></a>Run delegates</h2><p>is the end of middleware , Run or Use keywords after the first Run keyword would not be called.</p>
-<h2 id="Middleware-order"><a href="#Middleware-order" class="headerlink" title="Middleware order"></a>Middleware order</h2><p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/blog.github.io/2024/10/22/netCore-middleware/middleware-pipeline.svg"
-                      alt="middleware-pipeline"
-                ></p>
-<p>official provided recommonded order for the middleware , but the user can control over order by own. ( the order is determine by the code order )</p>
-<p>Why is there official pre-ordered order recommonded ?</p>
-<ul>
-<li><strong>Ensure Correct Functionality</strong> : <code>UseAuthentication</code> must run before <code>UseAuthorization</code> because the user must be authenticated before checking their permissions</li>
-<li><strong>Optimize Performance</strong> : By processing certain tasks earlier, such as static file requests or health checks, you can bypass more complex operations like authentication when they aren’t needed<br>Why is the order important ?</li>
-</ul>
-<br/>
-<b>
-As mentioned above "app.Run()" is the termianal of middlewares and in the img here shown endpoint is the end of middleware. So what are there relationships?
-</b>
-<br/><br/>
-
-<p>If app.Run() is placed before app.UseEndpoints(), MVC or Razor Pages endpoints will not execute. If placed after, it will only be hit if no endpoint matches the route.</p>
-<p>Since app.UseEndpoints() is responsible for executing the endpoint of your application (the actual logic that serves the request), app.Run() typically does not need to be used for handling requests in most standard cases, because MVC and Razor Pages handle requests fully.</p>
-<b>
-When to use app.Run() ?
-</b>
-
-<ul>
-<li>short-circuits</li>
-<li>simple app that no need for full MVC framework endpoint</li>
-</ul>
-<br/>
-
-<p>example :</p>
-<div class="code-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> builder = WebApplication.CreateBuilder(args);</span><br><span class="line"><span class="keyword">var</span> app = builder.Build();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 1. 首先配置異常處理中間件</span></span><br><span class="line"></span><br><span class="line">app.UseExceptionHandler(<span class="string">&quot;/error&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 3. 第一個中間件</span></span><br><span class="line">app.Use(<span class="keyword">async</span> (context, next) =&gt;</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> currentPath = context.Request.Path;</span><br><span class="line">    Console.WriteLine(<span class="string">$&quot;中間件 1 - 進入 [<span class="subst">&#123;currentPath&#125;</span>]&quot;</span>);</span><br><span class="line">    <span class="keyword">await</span> next();</span><br><span class="line">    Console.WriteLine(<span class="string">$&quot;中間件 1 - 返回 [<span class="subst">&#123;currentPath&#125;</span>]&quot;</span>);</span><br><span class="line"></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 4. 第二個中間件（拋出異常的中間件）</span></span><br><span class="line">app.Use(<span class="keyword">async</span> (context, next) =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">var</span> currentPath = context.Request.Path;</span><br><span class="line">    Console.WriteLine(<span class="string">$&quot;中間件 2 - 進入 [<span class="subst">&#123;currentPath&#125;</span>]&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 先調用 next()</span></span><br><span class="line">    <span class="keyword">await</span> next();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 確保在拋出異常之前沒有寫入響應</span></span><br><span class="line">    <span class="keyword">if</span> (currentPath == <span class="string">&quot;/&quot;</span> &amp;&amp; !context.Response.HasStarted)</span><br><span class="line">    &#123;</span><br><span class="line">        Console.WriteLine(<span class="string">&quot;中間件 2 - 即將拋出異常&quot;</span>);</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> Exception(<span class="string">&quot;中間件 2 返回時拋出異常&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Console.WriteLine(<span class="string">$&quot;中間件 2 - 返回 [<span class="subst">&#123;currentPath&#125;</span>]&quot;</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 5. 首頁路由</span></span><br><span class="line">app.MapGet(<span class="string">&quot;/&quot;</span>, () =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    Console.WriteLine(<span class="string">&quot;處理首頁請求 [/]&quot;</span>);</span><br><span class="line">    <span class="comment">//return Results.Text(&quot;Hello World!&quot;, &quot;text/plain&quot;);</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 6. 錯誤處理路由</span></span><br><span class="line">app.Map(<span class="string">&quot;/error&quot;</span>, <span class="keyword">async</span> context =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    Console.WriteLine(<span class="string">&quot;進入錯誤處理頁面 [/error]&quot;</span>);</span><br><span class="line">    <span class="keyword">var</span> exceptionFeature =</span><br><span class="line">        context.Features.Get&lt;Microsoft.AspNetCore.Diagnostics.IExceptionHandlerPathFeature&gt;();</span><br><span class="line">    <span class="keyword">var</span> error = exceptionFeature?.Error;</span><br><span class="line">    <span class="keyword">var</span> originalPath = exceptionFeature?.Path;</span><br><span class="line"></span><br><span class="line">    Console.WriteLine(<span class="string">$&quot;原始請求路徑: <span class="subst">&#123;originalPath&#125;</span>&quot;</span>);</span><br><span class="line">    Console.WriteLine(<span class="string">$&quot;捕捉到的錯誤: <span class="subst">&#123;error?.Message&#125;</span>&quot;</span>);</span><br><span class="line"></span><br><span class="line">    context.Response.ContentType = <span class="string">&quot;text/plain&quot;</span>;</span><br><span class="line">    <span class="keyword">await</span> context.Response.WriteAsync(</span><br><span class="line">        <span class="string">$&quot;錯誤已被處理！\n&quot;</span> +</span><br><span class="line">        <span class="string">$&quot;原始請求: <span class="subst">&#123;originalPath&#125;</span>\n&quot;</span> +</span><br><span class="line">        <span class="string">$&quot;錯誤信息: <span class="subst">&#123;error?.Message&#125;</span>&quot;</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">app.Run();</span><br></pre></td></tr></table></figure></div>
-
-<p>result :</p>
-<div class="code-container" data-rel="Txt"><figure class="iseeu highlight txt"><table><tr><td class="code"><pre><span class="line">request: &quot;/&quot;</span><br><span class="line">1. 中間件 1 - 進入 [/]</span><br><span class="line">2. 中間件 2 - 進入 [/]</span><br><span class="line">3. 處理首頁請求 [/]</span><br><span class="line">4. 中間件 2 - 即將拋出異常</span><br><span class="line">5. 觸發 app.UseExceptionHandler(&quot;/error&quot;);</span><br><span class="line"></span><br><span class="line">request: &quot;/error&quot;</span><br><span class="line">1. 中間件 1 - 進入 [/error]</span><br><span class="line">2. 中間件 2 - 進入 [/error]</span><br><span class="line">3. 進入錯誤處理頁面 [/error]</span><br><span class="line">   原始請求路徑: /</span><br><span class="line">   捕捉到的錯誤 中間件 2 - 即將拋出異常</span><br><span class="line">4. 中間件 2 - 返回 [/error]</span><br><span class="line">5. 中間件 1 - 返回 [/error]</span><br></pre></td></tr></table></figure></div>
-
-<p>Don’t call next.Invoke during or after the response has been sent to the client.</p>
-<h2 id="MVC-Endpoint"><a href="#MVC-Endpoint" class="headerlink" title="MVC Endpoint"></a>MVC Endpoint</h2><p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/blog.github.io/2024/10/22/netCore-middleware/MVCEndpoint.png"
-                      alt="MVCEndpoint"
-                ></p>
-]]></content>
-      <categories>
-        <category>Backend</category>
-      </categories>
-      <tags>
-        <tag>.NET</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>React 渲染</title>
     <url>/blog.github.io/2025/01/18/react-render/</url>
     <content><![CDATA[<h2 id="渲染策略"><a href="#渲染策略" class="headerlink" title="渲染策略"></a>渲染策略</h2><p>網站頁面常見組成，以電商為例 :</p>
@@ -487,67 +487,81 @@ When to use app.Run() ?
       </tags>
   </entry>
   <entry>
-    <title>⚡ Vite</title>
-    <url>/blog.github.io/2025/06/23/vite/</url>
-    <content><![CDATA[<p>要認識 Vite 就要先認識開發週期中的構建階段開始談起，所以我的文章安排將由構建開始，希望可以用更完整得脈絡，描述工具的誕生的緣由，再談及身為開發者的我們可以怎麼運用。</p>
-<h2 id="什麼是構建？"><a href="#什麼是構建？" class="headerlink" title="什麼是構建？"></a>什麼是構建？</h2><h3 id="現代前端開發的挑戰"><a href="#現代前端開發的挑戰" class="headerlink" title="現代前端開發的挑戰"></a>現代前端開發的挑戰</h3><p>隨著 Web 應用程式變得越來越複雜、更具規模，為了確保開發效率、程式碼品質、可維護性，開發者在原始碼中導入了許多提升開發體驗的功能和語法：</p>
+    <title>React Server Component</title>
+    <url>/blog.github.io/2025/01/18/react-server-component/</url>
+    <content><![CDATA[<h2 id="什麼是-React-Server-Component？"><a href="#什麼是-React-Server-Component？" class="headerlink" title="什麼是 React Server Component？"></a>什麼是 React Server Component？</h2><h3 id="SSR-運作機制的瓶頸"><a href="#SSR-運作機制的瓶頸" class="headerlink" title="SSR 運作機制的瓶頸"></a>SSR 運作機制的瓶頸</h3><p>儘管 SSR 能夠迅速提供渲染好的 HTML，但也有其困境在：</p>
 <ul>
-<li>熱模組替換 (HMR)：即時看到修改後的效果，無需手動重新整理頁面</li>
-<li>TypeScript：提供靜態型別檢查，編譯時期就能捕捉到型別錯誤</li>
-<li>JSX 語法：React 的 JSX 讓我們能用類似 HTML 的語法來描述 UI 結構，既直觀又易於理解</li>
-<li>CSS 預處理器：如 Sass、Less 提供變數、嵌套、函數等功能</li>
-<li>ES6 語法：使用最新的 JavaScript 語法特性來提升程式碼可讀性</li>
+<li>在開始渲染頁面之前，需等待頁面資料加載完成</li>
+<li>整頁 Hydration 階段完成前，客戶端不能與頁面互動</li>
+<li>整頁都需要 Hydrate 且需將 JavaScript 都載到客戶端才能進行</li>
 </ul>
-<p>然而，這些提升開發體驗的功能在生產環境中往往是非必要的，甚至無法直接在瀏覽器中運行。</p>
-<h3 id="原始碼-vs-生產環境的差異"><a href="#原始碼-vs-生產環境的差異" class="headerlink" title="原始碼 vs 生產環境的差異"></a>原始碼 vs 生產環境的差異</h3><p>原始碼階段 - 注重開發者體驗</p>
-<ul>
-<li>使用最新的語法和功能</li>
-<li>保持良好的程式碼結構和可讀性</li>
-<li>包含開發工具和除錯資訊</li>
-<li>模組化開發，檔案易於重複引用、管理</li>
-</ul>
-<p>生產環境 - 注重使用者體驗</p>
-<ul>
-<li>追求最小的檔案大小</li>
-<li>追求最快的載入速度</li>
-</ul>
+<br/>
+
+<p>頁面資料加載阻塞渲染的範例 ( 以下範例皆以 Next.Js 為主 )</p>
+<div class="code-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Home Page 頁面</span></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">Home</span> = (<span class="params">&#123; data &#125;</span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">ComponentA</span> <span class="attr">data</span>=<span class="string">&#123;data&#125;</span> /&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">ComponentB</span> /&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="title function_">getServerSideProps</span> = <span class="keyword">async</span> (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">  <span class="comment">// 只有 ComponentA 需要 data，ComponentB 也需要跟著等待</span></span><br><span class="line">  <span class="keyword">const</span> data = <span class="keyword">await</span> <span class="title function_">getComponentAData</span>();</span><br><span class="line">  <span class="keyword">return</span> &#123;<span class="attr">props</span>:&#123; data &#125;&#125;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></div>
+
 <br>
 
-<p>雖然上述提到了開發、正式階段，不過更加精確來說，構建其實是指「生成正式環境程式碼的整個流程」。<br>如果已經有使用框架的經驗，其實最常用到的「npm run build」背後就是去調用構建工具來完成這個流程。<br><br></p>
-<h2 id="構建的流程"><a href="#構建的流程" class="headerlink" title="構建的流程"></a>構建的流程</h2><p>構建的流程，涵蓋多種問題與解決方案，並且是逐步演化而來的，大致如下：</p>
-<ul>
-<li><p>開發體驗階段</p>
-<ul>
-<li>問題：修改程式碼後需手動刷新，開發效率低</li>
-<li>解決方案：Live Reload → Hot Module Replacement (HMR)</li>
-</ul>
-</li>
-<li><p>編譯階段</p>
-<ul>
-<li>問題：瀏覽器不支援最新 JavaScript 語法、TypeScript、JSX</li>
-<li>解決方案：Babel（JS 轉譯）、TypeScript Compiler（型別檢查）</li>
-</ul>
-</li>
-<li><p>資源處理階段</p>
-<ul>
-<li>問題：CSS、圖片、字型等靜態資源需要優化和管理</li>
-<li>解決方案：CSS 預處理器（Sass&#x2F;Less）、圖片壓縮、字型處理</li>
-</ul>
-</li>
-<li><p>效能優化階段</p>
-<ul>
-<li>問題：檔案過大、載入速度慢、快取策略</li>
-<li>解決方案：程式碼分割(Code Spliting)、Tree Shaking</li>
-</ul>
-</li>
-</ul>
-<p>既然有不同的問題與解決方案，那自然會有很多工具，比如：Webpack、Babel、SWC …，有些工具相當輕量只針對單個問題問題，有些則是組合包滿足多種需求。<br>而 Vite 正是多種構建工具之一，屬於可以滿足多種需求的類型。</p>
+<blockquote>
+<p><b>Hydration 階段</b><br>渲染產生的 HTML 是靜態的，若要具備互動性（例如：按鈕可按下並觸發事件）需要經過 Hydration 階段。<br>意思是載入 JavaScript 將 React 狀態與 DOM 的監聽事件綁定，才能具有互動性。</p>
+</blockquote>
 <br>
 
-<h2 id="Vite-登場"><a href="#Vite-登場" class="headerlink" title="Vite 登場"></a>Vite 登場</h2><h2 id="配置與應用"><a href="#配置與應用" class="headerlink" title="配置與應用"></a>配置與應用</h2>]]></content>
+<h3 id="Suspense-元件延遲渲染"><a href="#Suspense-元件延遲渲染" class="headerlink" title="Suspense 元件延遲渲染"></a>Suspense 元件延遲渲染</h3><p>為解決 SSR 整頁式渲染的運作機制，React 提出允許延遲渲染的 Suspense 元件，核心概念：</p>
+<ul>
+<li>伺服器優先渲染非 Suspense 區塊並分批發給客戶端，不必等待整頁一次性回覆(串流式渲染)</li>
+</ul>
+<p>範例中 ComponentB 將優先回傳，ComponentA 則可以延遲渲染後回傳給客戶端 :</p>
+<div class="code-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Home Page 頁面</span></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">Home</span> = (<span class="params">&#123; data &#125;</span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">Suspense</span> <span class="attr">fallback</span>=<span class="string">&#123;</span>&lt;<span class="attr">div</span>&gt;</span>Loading Component A...<span class="tag">&lt;/<span class="name">div</span>&gt;</span>&#125;&gt;</span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;<span class="name">ComponentA</span> <span class="attr">data</span>=<span class="string">&#123;data&#125;</span> /&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;/<span class="name">Suspense</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">ComponentB</span> /&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="title function_">getServerSideProps</span> = <span class="keyword">async</span> (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> data = <span class="keyword">await</span> <span class="title function_">getComponentAData</span>();</span><br><span class="line">  <span class="keyword">return</span> &#123;<span class="attr">props</span>:&#123; data &#125;&#125;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></div>
+
+<br>
+
+<p>即便提出了延遲區塊渲染的優化方案，核心問題仍然存在。<br>因此，才有了今天的主角 React Server Component（or RSC)。</p>
+<h3 id="React-Server-Component-RSC"><a href="#React-Server-Component-RSC" class="headerlink" title="React Server Component ( RSC )"></a>React Server Component ( RSC )</h3><p>RSC 並不是為了取代 SSR 或 Suspense，而是改變了 SSR 的運作機制。<br/><br>一般來說，完整的應用程式除了 RSC 還會有 Client Component (or RCC)。</p>
+<h4 id="RSC-特點"><a href="#RSC-特點" class="headerlink" title="RSC 特點"></a>RSC 特點</h4><ul>
+<li>將 加載資料 與 渲染 在伺服器端以 「元件」 為單位處理</li>
+<li>串流方式回傳給客戶端</li>
+<li>減少伺服器需打包並傳輸給客戶端的 JavaScript</li>
+</ul>
+<br/>
+
+<p>RSC 有別於 SSR，伺服器接受到頁面請求後是以「元件」為單位驅動處理的，所以不會有頁面下 A 元件需要 A 資料，B 元件不需要卻得等 A 資料加載完成才能渲染的問題。RSC 得以讓 A 元件取 A 資料，B 元件同時渲染自己的內容，兩者平行處理。</p>
+<p>頁面下中的 RSC 與 RCC，不必等待全數渲染完成才回傳，優先完成的部分將分批回傳給客戶端，讓初次載入速度更快使用者體驗更佳，且串流式渲染的 SEO 在現代瀏覽器中能夠被爬蟲識別。</p>
+<p>由於 RSC 在伺服器就渲染成靜態 HTML，本身又不包含客戶端操作邏輯，因此相比 SSR 要打包交給客戶端處理的 JavaScript 減少了且 RSC 不必 Hydrate。</p>
+<h4 id="RCC-特點"><a href="#RCC-特點" class="headerlink" title="RCC 特點"></a>RCC 特點</h4><ul>
+<li>處理客戶端操作邏輯</li>
+<li>客戶端包含 Hydration 階段</li>
+</ul>
+<p>RCC 主要處理客戶端的操作邏輯，運作方式如同 SSR，伺服器渲染後的結果包含: HTML、JavaScript，再交客戶端 Hydrate。</p>
+<p>以 RSC 與 RCC 組成頁面</p>
+<div class="code-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// ComponentA.js = React Server Component (RSC)</span></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">ComponentA</span> = <span class="keyword">async</span> (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> data = <span class="keyword">await</span> <span class="title function_">fetchComponentAData</span>();</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">h2</span>&gt;</span>Component A<span class="tag">&lt;/<span class="name">h2</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;data&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ComponentB.js = React Client Component (RCC)</span></span><br><span class="line"><span class="string">&quot;use client&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">ComponentB</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> [count, setCount] = <span class="title function_">useState</span>(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> <span class="title function_">handleClick</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">    <span class="title function_">setCount</span>(count + <span class="number">1</span>);</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">button</span> <span class="attr">onClick</span>=<span class="string">&#123;handleClick&#125;</span>&gt;</span>Click me<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">p</span>&gt;</span>Button clicked &#123;count&#125; times<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Home Page 頁面</span></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">Page</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">ComponentA</span> /&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">ComponentB</span> /&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></div>
+
+<br/>
+
+<p>假如 ComponentA 加載資料(fetchComponentAData)過程很慢，ComponentB 也能先渲染並回傳給客戶端進行 Hydrate，於此同時， ComponentA 繼續直到完成後再回傳。</p>
+<h4 id="RSC-RCC-下-Suspense-的職責"><a href="#RSC-RCC-下-Suspense-的職責" class="headerlink" title="RSC&#x2F;RCC 下 Suspense 的職責"></a>RSC&#x2F;RCC 下 Suspense 的職責</h4><ul>
+<li>SSR: Suspense 是實現串流渲染的必要元件，配置才能延遲渲染。</li>
+<li>RSC&#x2F;RCC: 元件本身已支持串流渲染，因此 Suspense 職責著重在為慢速、次要元件準備 fallback UI。</li>
+</ul>
+<h4 id="運作流程"><a href="#運作流程" class="headerlink" title="運作流程"></a>運作流程</h4><div class="code-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title function_">Page</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">var</span> pageData = <span class="keyword">await</span> <span class="title function_">getPageData</span>();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">h1</span>&gt;</span>&#123;pageData.title&#125;<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span></span><br><span class="line"><span class="language-xml"></span></span><br><span class="line"><span class="language-xml">      &#123;/* RSC */&#125;</span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">Suspense</span> <span class="attr">fallback</span>=<span class="string">&#123;</span>&lt;<span class="attr">Loading</span> /&gt;</span>&#125;&gt;</span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;<span class="name">ServerComponent</span> /&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;/<span class="name">Suspense</span>&gt;</span></span></span><br><span class="line"><span class="language-xml"></span></span><br><span class="line"><span class="language-xml">       &#123;/* RCC */&#125;</span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">ClientComponentB</span> /&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></div>
+
+<p>再次強調，SSR 指的是伺服器端的渲染，而 RSC 的出現改善了 SSR 的運作機制，並不是取代 SSR.</p>
+<p>說明</p>
+<ol>
+<li>Page 為頁面層級的元件，因此需等待 pageData 後才能接續渲染</li>
+<li>併行渲染 Page 內部的內容，若 RSC&#x2F;RCC 包含加載資料則分別處理</li>
+<li>h1、Suspense 先回傳給客戶端頁面</li>
+<li>同時 ServerComponent、ClientComponentB 繼續渲染直到完成再給客戶端</li>
+<li>僅 ClientComponentB 在客戶端需要 Hydrate</li>
+<li>完成頁面渲染</li>
+</ol>
+]]></content>
       <categories>
         <category>Frontend</category>
       </categories>
+      <tags>
+        <tag>React</tag>
+      </tags>
   </entry>
   <entry>
     <title>.NET 中如何平行發送 API</title>
@@ -627,80 +641,83 @@ When to use app.Run() ?
       </tags>
   </entry>
   <entry>
-    <title>React Server Component</title>
-    <url>/blog.github.io/2025/01/18/react-server-component/</url>
-    <content><![CDATA[<h2 id="什麼是-React-Server-Component？"><a href="#什麼是-React-Server-Component？" class="headerlink" title="什麼是 React Server Component？"></a>什麼是 React Server Component？</h2><h3 id="SSR-運作機制的瓶頸"><a href="#SSR-運作機制的瓶頸" class="headerlink" title="SSR 運作機制的瓶頸"></a>SSR 運作機制的瓶頸</h3><p>儘管 SSR 能夠迅速提供渲染好的 HTML，但也有其困境在：</p>
+    <title>⚡ Vite</title>
+    <url>/blog.github.io/2025/06/23/vite/</url>
+    <content><![CDATA[<p>要認識 Vite 就要先認識開發週期中的構建階段開始談起，所以我的文章安排將由構建開始，希望可以用更完整得脈絡，描述工具的誕生的緣由，再談及身為開發者的我們可以怎麼運用。</p>
+<h2 id="什麼是構建？"><a href="#什麼是構建？" class="headerlink" title="什麼是構建？"></a>什麼是構建？</h2><h3 id="現代前端開發的挑戰"><a href="#現代前端開發的挑戰" class="headerlink" title="現代前端開發的挑戰"></a>現代前端開發的挑戰</h3><p>隨著 Web 應用程式變得越來越複雜、更具規模，為了確保開發效率、程式碼品質、可維護性，開發者在原始碼中導入了許多提升開發體驗的功能和語法：</p>
 <ul>
-<li>在開始渲染頁面之前，需等待頁面資料加載完成</li>
-<li>整頁 Hydration 階段完成前，客戶端不能與頁面互動</li>
-<li>整頁都需要 Hydrate 且需將 JavaScript 都載到客戶端才能進行</li>
+<li>熱模組替換 (HMR)：即時看到修改後的效果，無需手動重新整理頁面</li>
+<li>TypeScript：提供靜態型別檢查，編譯時期就能捕捉到型別錯誤</li>
+<li>JSX 語法：React 的 JSX 讓我們能用類似 HTML 的語法來描述 UI 結構，既直觀又易於理解</li>
+<li>CSS 預處理器：如 Sass、Less 提供變數、嵌套、函數等功能</li>
+<li>ES6 語法：使用最新的 JavaScript 語法特性來提升程式碼可讀性</li>
 </ul>
-<br/>
-
-<p>頁面資料加載阻塞渲染的範例 ( 以下範例皆以 Next.Js 為主 )</p>
-<div class="code-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Home Page 頁面</span></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">Home</span> = (<span class="params">&#123; data &#125;</span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">ComponentA</span> <span class="attr">data</span>=<span class="string">&#123;data&#125;</span> /&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">ComponentB</span> /&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="title function_">getServerSideProps</span> = <span class="keyword">async</span> (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">  <span class="comment">// 只有 ComponentA 需要 data，ComponentB 也需要跟著等待</span></span><br><span class="line">  <span class="keyword">const</span> data = <span class="keyword">await</span> <span class="title function_">getComponentAData</span>();</span><br><span class="line">  <span class="keyword">return</span> &#123;<span class="attr">props</span>:&#123; data &#125;&#125;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></div>
-
-<br>
-
-<blockquote>
-<p><b>Hydration 階段</b><br>渲染產生的 HTML 是靜態的，若要具備互動性（例如：按鈕可按下並觸發事件）需要經過 Hydration 階段。<br>意思是載入 JavaScript 將 React 狀態與 DOM 的監聽事件綁定，才能具有互動性。</p>
-</blockquote>
-<br>
-
-<h3 id="Suspense-元件延遲渲染"><a href="#Suspense-元件延遲渲染" class="headerlink" title="Suspense 元件延遲渲染"></a>Suspense 元件延遲渲染</h3><p>為解決 SSR 整頁式渲染的運作機制，React 提出允許延遲渲染的 Suspense 元件，核心概念：</p>
+<p>然而，這些提升開發體驗的功能在生產環境中往往是非必要的，甚至無法直接在瀏覽器中運行。</p>
+<h3 id="原始碼-vs-生產環境的差異"><a href="#原始碼-vs-生產環境的差異" class="headerlink" title="原始碼 vs 生產環境的差異"></a>原始碼 vs 生產環境的差異</h3><p>原始碼階段 - 注重開發者體驗</p>
 <ul>
-<li>伺服器優先渲染非 Suspense 區塊並分批發給客戶端，不必等待整頁一次性回覆(串流式渲染)</li>
+<li>使用最新的語法和功能</li>
+<li>保持良好的程式碼結構和可讀性</li>
+<li>包含開發工具和除錯資訊</li>
+<li>模組化開發，檔案易於重複引用、管理</li>
 </ul>
-<p>範例中 ComponentB 將優先回傳，ComponentA 則可以延遲渲染後回傳給客戶端 :</p>
-<div class="code-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Home Page 頁面</span></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">Home</span> = (<span class="params">&#123; data &#125;</span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">Suspense</span> <span class="attr">fallback</span>=<span class="string">&#123;</span>&lt;<span class="attr">div</span>&gt;</span>Loading Component A...<span class="tag">&lt;/<span class="name">div</span>&gt;</span>&#125;&gt;</span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;<span class="name">ComponentA</span> <span class="attr">data</span>=<span class="string">&#123;data&#125;</span> /&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;/<span class="name">Suspense</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">ComponentB</span> /&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="title function_">getServerSideProps</span> = <span class="keyword">async</span> (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> data = <span class="keyword">await</span> <span class="title function_">getComponentAData</span>();</span><br><span class="line">  <span class="keyword">return</span> &#123;<span class="attr">props</span>:&#123; data &#125;&#125;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></div>
-
+<p>生產環境 - 注重使用者體驗</p>
+<ul>
+<li>追求最小的檔案大小</li>
+<li>追求最快的載入速度</li>
+</ul>
 <br>
 
-<p>即便提出了延遲區塊渲染的優化方案，核心問題仍然存在。<br>因此，才有了今天的主角 React Server Component（or RSC)。</p>
-<h3 id="React-Server-Component-RSC"><a href="#React-Server-Component-RSC" class="headerlink" title="React Server Component ( RSC )"></a>React Server Component ( RSC )</h3><p>RSC 並不是為了取代 SSR 或 Suspense，而是改變了 SSR 的運作機制。<br/><br>一般來說，完整的應用程式除了 RSC 還會有 Client Component (or RCC)。</p>
-<h4 id="RSC-特點"><a href="#RSC-特點" class="headerlink" title="RSC 特點"></a>RSC 特點</h4><ul>
-<li>將 加載資料 與 渲染 在伺服器端以 「元件」 為單位處理</li>
-<li>串流方式回傳給客戶端</li>
-<li>減少伺服器需打包並傳輸給客戶端的 JavaScript</li>
+<p>雖然上述提到了開發、正式階段，不過更加精確來說，構建其實是指「生成正式環境程式碼的整個流程」。如果已經有使用框架的經驗，其實最常用到的「npm run build」背後就是去調用構建工具來完成這個流程。<br><br></p>
+<h2 id="構建的流程"><a href="#構建的流程" class="headerlink" title="構建的流程"></a>構建的流程</h2><p>構建的流程，涵蓋多種問題與解決方案，並且是逐步演化而來的，大致如下：</p>
+<ul>
+<li><p>開發體驗階段</p>
+<ul>
+<li>問題：修改程式碼後需手動刷新，開發效率低</li>
+<li>解決方案：Live Reload → Hot Module Replacement (HMR)</li>
 </ul>
-<br/>
-
-<p>RSC 有別於 SSR，伺服器接受到頁面請求後是以「元件」為單位驅動處理的，所以不會有頁面下 A 元件需要 A 資料，B 元件不需要卻得等 A 資料加載完成才能渲染的問題。RSC 得以讓 A 元件取 A 資料，B 元件同時渲染自己的內容，兩者平行處理。</p>
-<p>頁面下中的 RSC 與 RCC，不必等待全數渲染完成才回傳，優先完成的部分將分批回傳給客戶端，讓初次載入速度更快使用者體驗更佳，且串流式渲染的 SEO 在現代瀏覽器中能夠被爬蟲識別。</p>
-<p>由於 RSC 在伺服器就渲染成靜態 HTML，本身又不包含客戶端操作邏輯，因此相比 SSR 要打包交給客戶端處理的 JavaScript 減少了且 RSC 不必 Hydrate。</p>
-<h4 id="RCC-特點"><a href="#RCC-特點" class="headerlink" title="RCC 特點"></a>RCC 特點</h4><ul>
-<li>處理客戶端操作邏輯</li>
-<li>客戶端包含 Hydration 階段</li>
+</li>
+<li><p>編譯階段</p>
+<ul>
+<li>問題：瀏覽器不支援最新 JavaScript 語法、TypeScript、JSX</li>
+<li>解決方案：Babel（JS 轉譯）、TypeScript Compiler（型別檢查）</li>
 </ul>
-<p>RCC 主要處理客戶端的操作邏輯，運作方式如同 SSR，伺服器渲染後的結果包含: HTML、JavaScript，再交客戶端 Hydrate。</p>
-<p>以 RSC 與 RCC 組成頁面</p>
-<div class="code-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// ComponentA.js = React Server Component (RSC)</span></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">ComponentA</span> = <span class="keyword">async</span> (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> data = <span class="keyword">await</span> <span class="title function_">fetchComponentAData</span>();</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">h2</span>&gt;</span>Component A<span class="tag">&lt;/<span class="name">h2</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;data&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ComponentB.js = React Client Component (RCC)</span></span><br><span class="line"><span class="string">&quot;use client&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">ComponentB</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> [count, setCount] = <span class="title function_">useState</span>(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> <span class="title function_">handleClick</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">    <span class="title function_">setCount</span>(count + <span class="number">1</span>);</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">button</span> <span class="attr">onClick</span>=<span class="string">&#123;handleClick&#125;</span>&gt;</span>Click me<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">p</span>&gt;</span>Button clicked &#123;count&#125; times<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Home Page 頁面</span></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">Page</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">ComponentA</span> /&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">ComponentB</span> /&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></div>
-
-<br/>
-
-<p>假如 ComponentA 加載資料(fetchComponentAData)過程很慢，ComponentB 也能先渲染並回傳給客戶端進行 Hydrate，於此同時， ComponentA 繼續直到完成後再回傳。</p>
-<h4 id="RSC-RCC-下-Suspense-的職責"><a href="#RSC-RCC-下-Suspense-的職責" class="headerlink" title="RSC&#x2F;RCC 下 Suspense 的職責"></a>RSC&#x2F;RCC 下 Suspense 的職責</h4><ul>
-<li>SSR: Suspense 是實現串流渲染的必要元件，配置才能延遲渲染。</li>
-<li>RSC&#x2F;RCC: 元件本身已支持串流渲染，因此 Suspense 職責著重在為慢速、次要元件準備 fallback UI。</li>
+</li>
+<li><p>資源處理階段</p>
+<ul>
+<li>問題：CSS、圖片、字型等靜態資源需要優化和管理</li>
+<li>解決方案：CSS 預處理器（Sass&#x2F;Less）、圖片壓縮、字型處理</li>
 </ul>
-<h4 id="運作流程"><a href="#運作流程" class="headerlink" title="運作流程"></a>運作流程</h4><div class="code-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title function_">Page</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">var</span> pageData = <span class="keyword">await</span> <span class="title function_">getPageData</span>();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">h1</span>&gt;</span>&#123;pageData.title&#125;<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span></span><br><span class="line"><span class="language-xml"></span></span><br><span class="line"><span class="language-xml">      &#123;/* RSC */&#125;</span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">Suspense</span> <span class="attr">fallback</span>=<span class="string">&#123;</span>&lt;<span class="attr">Loading</span> /&gt;</span>&#125;&gt;</span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;<span class="name">ServerComponent</span> /&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;/<span class="name">Suspense</span>&gt;</span></span></span><br><span class="line"><span class="language-xml"></span></span><br><span class="line"><span class="language-xml">       &#123;/* RCC */&#125;</span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">ClientComponentB</span> /&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></div>
+</li>
+<li><p>效能優化階段</p>
+<ul>
+<li>問題：檔案過大、載入速度慢、快取策略</li>
+<li>解決方案：程式碼分割(Code Spliting)、Tree Shaking</li>
+</ul>
+</li>
+</ul>
+<p>既然有不同的問題與解決方案，那自然會有很多工具，比如：Webpack、Babel、SWC …，有些工具相當輕量只針對單個問題，有些則滿足多種需求。<br>而 Vite 正是多種構建工具之一，屬於可以滿足多種需求的類型。</p>
+<br>
 
-<p>再次強調，SSR 指的是伺服器端的渲染，而 RSC 的出現改善了 SSR 的運作機制，並不是取代 SSR.</p>
-<p>說明</p>
+<h2 id="Vite-登場"><a href="#Vite-登場" class="headerlink" title="Vite 登場"></a>Vite 登場</h2><p>Vite 做為 Web 應用的構建工具，提升了開發體驗與應用性能。</p>
+<p><strong>開發體驗</strong> <br></p>
 <ol>
-<li>Page 為頁面層級的元件，因此需等待 pageData 後才能接續渲染</li>
-<li>併行渲染 Page 內部的內容，若 RSC&#x2F;RCC 包含加載資料則分別處理</li>
-<li>h1、Suspense 先回傳給客戶端頁面</li>
-<li>同時 ServerComponent、ClientComponentB 繼續渲染直到完成再給客戶端</li>
-<li>僅 ClientComponentB 在客戶端需要 Hydrate</li>
-<li>完成頁面渲染</li>
+<li><p><strong>提升開發伺服器的啟動速度</strong> <br><br>在開發環境，將程式碼區分依賴與原始碼，並搭配現代瀏覽器接收 ESM（模組） 的機制，優化啟動速度。 <br></p>
+<ul>
+<li><p>現代瀏覽器與 ESM <br><br>允許解析 ESM 的 JavaScript 檔案（<code>import</code> &#x2F; <code>export</code>），改善開發伺服器必須打包才能給瀏覽器的狀況。</p>
+</li>
+<li><p>依賴 <br><br>指第三方套件（<code>node_modules</code>），在專案中套件程式碼的變動性低，因此 Vite 在啟動開發伺服器時會進行 pre-build，pre-build 的結果會快取（<code>node_modules/.vite</code>），而且是 ESM 格式。（ pre-build 透過 esbuild 工具實現打包 ）</p>
+</li>
+<li><p>原始碼 <br><br>指開發者的原始碼，Vite 實現先啟動開發伺服器，再針對請求路由回傳 ESM 檔案給瀏覽器解析的機制，緩解傳統上必須先將應用程式打包( Bundle based dev server ) 才能啟動伺服器的狀況。</p>
+</li>
+</ul>
+</li>
+<li><p><strong>提升 HMR（Hot Module Replacement）更新速度</strong> <br><br>( 施工中 …)</p>
+</li>
 </ol>
+<h2 id="配置與應用"><a href="#配置與應用" class="headerlink" title="配置與應用"></a>配置與應用</h2><p>Note:<br>優化行距、字體大小</p>
 ]]></content>
       <categories>
         <category>Frontend</category>
       </categories>
-      <tags>
-        <tag>React</tag>
-      </tags>
   </entry>
 </search>
